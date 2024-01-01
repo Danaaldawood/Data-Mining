@@ -1,0 +1,2664 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+## **Kids Hobby Prediction Dataset**
+
+
+
+**1.Problem**
+
+Children often find themselves at a crossroads when it comes to discovering their passions or hobbies, be it in academics, arts, or sports. Recognizing the importance of guiding children towards activities they are passionate about; we have curated a dataset obtained through surveys conducted with parents. This dataset compiles valuable information about children's preferences, enabling the creation of a classification model aimed at predicting kids' hobbies. 
+       
+In this exploratory journey, we delve into the dataset to uncover patterns and insights that can assist parents in understanding their child's inclinations better. Through the application of clustering techniques, we aim to categorize children based on number of columns (Fav_sub , Scholarship, etc..). The ultimate goal is to provide parents with meaningful recommendations, fostering an environment where children can thrive in activities that genuinely resonate with their interests. 
+
+By analyzing this dataset, we hope to offer insightful information that will aid parents in guiding their kids toward the right hobbies. 
+
+
+
+
+**\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\--**
+
+
+
+
+**2.Data Mining Task**
+
+
+The data mining task at hand revolves around predicting kids' hobbies based on a dataset named "Hobby_Data," obtained through specific questions posed to their parents regarding preferences, capabilities, and achievements. This dataset serves as the foundation for two primary data mining tasks: classification and clustering. In the classification process, the goal is to train a machine learning model to be capable of accurately predicting a child's hobby as either "academic," "art," or "sports." This requires using the data collected from parents to establish patterns and relationships that guide the model in making accurate predictions. Concurrently, the clustering process involves partitioning the dataset into meaningful clusters, grouping together children with similar characteristics or preferences. Through these dual approaches, the data mining task aims to develop a robust predictive model capable of accurately categorizing children's hobbies in order to uncover the inherent structures, patterns, and associations within the dataset, contributing to a deeper understanding of the diverse interests and engagement levels of the young population in academic, artistic, and sports-related activities.
+ 
+ 
+ 
+ 
+ **\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\--**
+
+
+
+
+**3.Data**
+
+
+Following the selection of our data set ("Hobby_Data") which predicts kids' hobbies, that was collected by asking their parents specific questions about their kid's preferences, capabilities, and achievements. To help us train the machine to predict the kid's hobby. We will begin to preprocess and analyze the data.
+
+The source: https://www.kaggle.com/datasets/abtabm/hobby-prediction-basic 
+Number of objects: 1601 
+Number of attributes: 14 
+
+
+**Attribute** 
+
+| **Attribute name**         | **Description**                                               | **Data type** |
+|------------------------|---------------------------------------------------------------|---------------|
+| Olympiad_Participation | Has your child participated in any Science/Maths              | Boolean       |
+| Scholarship            | Has he/she received any scholarship?                          | Boolean       |
+| School                 | Love's going to school?                                       | Boolean       |
+| Fav_sub                | What is his/her favorite subject?                             | Categorical   |
+| Projects               | Has done any projects under academics before?                 | Boolean       |
+| Grasp_pow              | His/Her Grasping power (1-6)                                  | Ordinal       |
+| Time_sprt              | How much time does he/she spend playing outdoor/indoor games? | Ordinal       |
+| Medals                 | Medals won in Sports?                                         | Boolean       |
+| Career_sprt            | Want's to pursue his/her career in sports?                    | Boolean       |
+| Act_sprt               | Regular in his/her sports activities?                         | Boolean       |
+| Fant_arts              | Love creating fantasy paintings?                              | Boolean       |
+| Won_arts               | Won art competitions?                                         | Ordinal       |
+| Time_art               | Time utilized in Arts?                                        | Ordinal       |
+| Predicted Hobby        | predictions for the hobby that the kid wouldl ike             | Categorical   |
+=======
+>>>>>>> Stashed changes
+
+**General information about the data set:**
+
+```{r}
+str(Hobby_Data)
+```
+
+**samples of raw dataset:**
+
+```{r}
+sample(Hobby_Data)
+```
+
+**variables distribution:**
+
+    In our dataset, numeric variables are not available; instead, we have three ordinal variables. Due to the nature of our data types, certain types of graphs, such as scatter plots and box plots, were not suitable for our analysis.
+
+variables distribution of Time_sprt:
+```{r}
+install.packages("magrittr") # install only one time then put this command as comment after installation
+library(magrittr) ## for pipe operations
+Hobby_Data$Time_art %>% density() %>% plot(main='variables distribution of Time_art')
+
+```
+
+In the "Time_art" variable, parents were requested to assess the time their child dedicated to artistic pursuits like painting or paper crafting, using a scale ranging from 1 to 6, where 6 represents the highest level of involvement. It's worth noting that the concentration of lower ratings at the lower end of the scale (1) is quite pronounced, and this tendency may be attributed to the inherent inclination of children towards physical activities.
+
+variables distribution of Time_art:
+
+```{r}
+Hobby_Data$Time_sprt %>% density() %>% plot(main='variables distribution of Time_sprt')
+```
+
+Parents were requested to assess their children's involvement in sports on a scale from 1 to 6 within the "Time_sprt" variable. Notably, the most prevalent ranking was 3, suggesting a moderate level of sports participation. It's interesting to observe that the distribution exhibits a shape akin to a bell curve, indicating that a substantial proportion of children have a genuine love for sports.
+
+variables distribution of Grasp_pow:
+
+```{r}
+Hobby_Data$Grasp_pow %>% density() %>% plot(main='variables distribution of Grasp_pow')
+```
+
+The density graph depicting parents' ratings of their children's grasp power, which ranges from 1 to 6, illustrates a trend where the most common rating is level 3, followed by level 4, level 5, level 2, level 1, and level 6. This distribution indicates that a substantial proportion of parents believe their children possess grasp power that is average or slightly above average (levels 3 and 4), with fewer children rated at the extremes (levels 1, 2, 5, and 6).
+
+variables distribution of the class label 'Predicted Hobby':
+
+```{r}
+install.packages("dplyr") # install only one time then put this command as comment after installation
+library(dplyr)
+
+dataset2 <- Hobby_Data %>% sample_n(1600)
+table(dataset2$`Predicted Hobby`) %>% pie()
+tab <- dataset2$`Predicted Hobby` %>% table()
+precentages <- tab %>% prop.table() %>% round(3) * 100 
+txt <- paste0(names(tab), '\n', precentages, '%')
+pie(tab, labels=txt)
+```
+
+The pie chart illustrates the distribution of the class label 'Predicted Hobby'. It's evident that a substantial portion, approximately 43.7%, of the children's hobbies are academic in nature, indicating a strong interest in educational pursuits. Additionally, 30.8% of the kids are engaged in sports, reflecting a significant inclination towards physical activities. Arts-related hobbies account for 25.6% of the total, the distribution reflects a harmonious blend of hobbies. This balanced distribution not only signifies a variety of interests but also indicates a well-rounded engagement of children in academic, physical, and creative activities.
+
+
+**Statistical measures :**
+
+```{r}
+find_mode <- function(x) {
+  u <- unique(x)
+  tab <- tabulate(match(x, u))
+  u[tab == max(tab)]
+}
+
+find_mode(Hobby_Data$Time_art)
+# Updated upstream
+hist(Hobby_Data$Time_art)
+
+#Stashed changes
+```
+
+The histogram makes it evident that the mode is equal to 1, and we believe that the high frequency of parents ranking "1" as the most chosen rank in the "Time_art" variable could be attributed to several factors. It might indicate that a significant number of parents perceive their children's involvement in art activities as relatively low, possibly due to time constraints, academic priorities, or a limited interest in art. Alternatively, it could reflect that parents value a more balanced approach to their children's activities, with a variety of interests and responsibilities sharing their time. This trend could also result from a cultural or educational emphasis on other subjects and extracurricular activities that compete for a child's time, potentially leading to a lower ranking for art-related activities.
+
+```{r}
+find_mode(Hobby_Data$Grasp_pow)
+hist(Hobby_Data$Grasp_pow)
+```
+
+Rank 3, in this context, may have been the most chosen rank because it likely represents an average or moderate level of grasp power. Parents may have assessed their children's grasp power as neither exceptionally strong (rank 5 or 6) nor particularly weak (rank 1 or 2), resulting in the preference for the middle-ranking option. This choice could reflect a perception that their children's grasp power falls within a typical or expected range, making it the most common rating.
+
+```{r}
+find_mode(Hobby_Data$Time_sprt)
+hist(Hobby_Data$Time_sprt)
+```
+
+As shown in the histogram the rank 3 on a scale of 1 to 6 was likely the most chosen rank for assessing children's involvement in sports because it represents a balanced middle ground. Parents may have perceived rank 3 as indicating that their children are moderately involved in sports, not excessively committed or disinterested. This middle-of-the-road ranking reflects a common perspective that many parents may hold, considering that extreme rankings, such as 1 or 6, might suggest either a lack of involvement or an excessive focus on sports, which may not align with their perception of their child's overall well-rounded development.
+
+The histogram graph for "Time_art" variable
+```{r}
+hist(Hobby_Data$Time_art)
+```
+
+The histogram makes it evident that the mode is equal to 1, and we believe that the high frequency of parents ranking "1" as the most chosen rank in the "Time_art" variable could be attributed to several factors. It might indicate that a significant number of parents perceive their children's involvement in art activities as relatively low, possibly due to time constraints, academic priorities, or a limited interest in art. Alternatively, it could reflect that parents value a more balanced approach to their children's activities, with a variety of interests and responsibilities sharing their time. This trend could also result from a cultural or educational emphasis on other subjects and extracurricular activities that compete for a child's time, potentially leading to a lower ranking for art-related activities.
+
+
+```{r}
+find_mode(Hobby_Data$Grasp_pow)
+```
+
+
+
+The histogram graph for "Grasp_pow" variable
+```{r}
+hist(Hobby_Data$Grasp_pow)
+```
+Rank 3, in this context, may have been the most chosen rank because it likely represents an average or moderate level of grasp power. Parents may have assessed their children's grasp power as neither exceptionally strong (rank 5 or 6) nor particularly weak (rank 1 or 2), resulting in the preference for the middle-ranking option. This choice could reflect a perception that their children's grasp power falls within a typical or expected range, making it the most common rating.
+
+
+```{r}
+find_mode(Hobby_Data$Time_sprt)
+```
+
+The histogram graph for "Time_sprt" variable
+```{r}
+hist(Hobby_Data$Time_sprt)
+```
+As shown in the histogram the rank 3 on a scale of 1 to 6 was likely the most chosen rank for assessing children's involvement in sports because it represents a balanced middle ground. Parents may have perceived rank 3 as indicating that their children are moderately involved in sports, not excessively committed or disinterested. This middle-of-the-road ranking reflects a common perspective that many parents may hold, considering that extreme rankings, such as 1 or 6, might suggest either a lack of involvement or an excessive focus on sports, which may not align with their perception of their child's overall well-rounded development.
+
+
+
+
+**\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\--**
+
+
+
+**5.Data preprocessing**
+
+
+**#1#Data cleaning:**
+
+During the data cleaning stage, finding and fixing faults, inconsistencies, and errors in a dataset helps it be more reliable and of higher quality for analysis and modeling. There are methods for handling missing values, detecting outliers, resolving inconsistencies, and standardizing formats.
+
+view Dataset"Hobby_Data"
+
+```{r}
+View(Hobby_Data)
+```
+
+check missing value :
+
+```{r}
+is.na(Hobby_Data)
+```
+
+find the total null values in the dataset:
+```{r}
+sum(is.na(Hobby_Data))
+```
+This stage involves checking and deleting for null and missing values because they might have a significant impact on the data and cause errors and negative effects in subsequent steps.We simply looked for missing values, and there are not missing values in our dataset. According to our investigation, the dataset does not contain any outliers since it doesn't have a numerical data type. Additionally, there are no inconsistent values or other errors.
+
+
+Dataset after cleaning step:
+```{r}
+sample(Hobby_Data)
+```
+
+**#2#Second:Encoding:**
+This step includes a Converting categorical or non-numeric data into a numerical format, which is necessary for compatibility with subsequent steps in preprocessing.[1]
+```{r}
+Hobby_Data$Olympiad_Participation = factor(Hobby_Data$Olympiad_Participation,levels = c("No", "Yes"), labels = c(0, 1))
+Hobby_Data$Scholarship = factor(Hobby_Data$Scholarship , levels = c("No", "Yes"), labels = c(0, 1))
+Hobby_Data$School = factor(Hobby_Data$School, levels = c("No", "Yes"), labels = c(0, 1))
+Hobby_Data$Projects = factor(Hobby_Data$Projects, levels = c("No", "Yes"), labels = c(0, 1))
+Hobby_Data$Medals = factor(Hobby_Data$Medals, levels = c("No", "Yes"), labels = c(0, 1))
+Hobby_Data$Career_sprt = factor(Hobby_Data$Career_sprt, levels = c("No", "Yes"), labels = c(0, 1))
+Hobby_Data$Act_sprt = factor(Hobby_Data$Act_sprt, levels = c("No", "Yes"), labels = c(0, 1))
+Hobby_Data$Fant_arts = factor(Hobby_Data$Fant_arts, levels = c("No", "Yes"), labels = c(0, 1))
+Hobby_Data$Won_arts = factor(Hobby_Data$Won_arts, levels = c("No", "Maybe", "Yes"), labels = c(0, 2, 1))
+Hobby_Data$Fav_sub = factor(Hobby_Data$Fav_sub, levels = c("Science", "Mathematics", "History/Geography", "Any language"), labels = c(1, 2, 3, 4))
+Hobby_Data$`Predicted Hobby` <- factor(Hobby_Data$`Predicted Hobby`, levels = c("Academics", "Arts", "Sports"), labels = c(1, 2, 3))
+```
+
+Dataset after Encoding :
+```{r}
+sample(Hobby_Data)
+```
+
+
+**#3# Normalization and Discetization:**
+
+We don't need to use normalization and discetization in our dataset. Since our dataset doesn't have numeric attributes and normalization involves mathematical operations, which can result in meaningless values and errors, Also, applying discretization leads to a loss of information and creates intervals and relationships that don't exist between values.[2]
+
+**#4#Feature Selection:**
+
+To improve the accuracy of our predictions for the target class "Predicted Hobby" and decrease the processing time of our classifier, we will utilize feature selection techniques. These techniques enable us to eliminate redundant or irrelevant attributes from the dataset, resulting in a more concise subset of features that provide the most valuable information for our predictions.[3]
+
+Specifically, we will use two feature selection methods: Rank Features by Importance and Feature Selection Using Recursive Feature Elimination (RFE).
+
+1.**Rank Features by Importance:**
+
+This method used in the code helps us determine which features are most important for predicting the "Predicted Hobby" class label in the dataset. It utilizes the Random Forest algorithm, known for its accurate prediction capabilities. This method calculates the importance of each feature by assessing its contribution to the overall accuracy of the predictions. By ranking the features based on their importance, we can identify the ones that have the greatest influence on determining hobbies.
+
+Ensure the results are repeatable by setting a seed:
+
+```{r}
+set.seed(7)
+```
+
+Load the necessary libraries:
+
+```{r}
+install.packages("caret")
+install.packages("randomForest")
+library(caret)
+library(randomForest)
+```
+
+Separate the predictors and the class label:
+
+```{r}
+predictors <- Hobby_Data[, -14]  # Excluding the class label (Predicted Hobby)
+class_label <- Hobby_Data$`Predicted Hobby`
+```
+
+Train a Random Forest model:
+
+```{r}
+model <- randomForest(predictors, class_label, importance = TRUE)
+```
+
+Get the variable importance:
+
+```{r}
+importance <- importance(model)
+```
+
+Rank the features by importance:
+
+```{r}
+ranked_features <- sort(importance[, "MeanDecreaseGini"], decreasing = TRUE)
+```
+
+Print the ranked features:
+
+```{r}
+print(ranked_features)
+
+barplot(ranked_features, horiz = TRUE, las = 1, main = "Kids Hobby Variable Importance Ranking")
+```
+
+2.**Feature Selection Using RFE:**
+
+The Recursive Feature Elimination (RFE) method with Random Forest is a technique used to select the most important features for accurate predictions . It iteratively eliminates less relevant features, retraining the model at each step to evaluate performance. By focusing on the most informative features, RFE improves reduces complexity, and enhances prediction accuracy. It is particularly effective with Random Forest due to its ability to handle complex relationships and high-dimensional data. RFE helps identify the most important attributes associated with the target variable, enabling the creation of more efficient and accurate models.
+
+Ensure the results are repeatable by setting a seed:
+
+```{r}
+set.seed(7)
+```
+
+Load the necessary libraries:
+
+```{r}
+library(caret)
+```
+
+Define the control parameters for RFE using random forest selection function:
+
+```{r}
+control <- rfeControl(functions = rfFuncs, method = "cv", number = 10)
+```
+
+Extract the predictor variables from Hobby_Data:
+
+```{r}
+predictors <- Hobby_Data[, -ncol(Hobby_Data)]
+```
+
+Convert the outcome variable to a factor:
+
+```{r}
+outcome <- as.factor(Hobby_Data$`Predicted Hobby`)
+```
+
+Run the RFE algorithm:
+
+```{r}
+results <- rfe(predictors, outcome, sizes = 1:ncol(Hobby_Data), rfeControl = control)
+```
+
+Summarize the results:
+
+```{r}
+print(results)
+```
+
+List the chosen features selected by RFE:
+
+```{r}
+predictors(results)
+```
+
+Plot the results:
+
+```{r}
+plot(results, type = c("g", "o"))
+```
+
+3.**Removing Irrelevant Columns:**
+
+By considering both Recursive Feature Elimination (RFE) and Rank By Importance, we can make informed decisions about feature relevance and impact on the model. In this case, the columns "School," "Medals" should be deleted as they have lower importance scores compared to the selected variables. Removing these columns simplifies the model and reduces dimensionality, eliminating potential noise and irrelevant information that could hinder accurate predictions.
+
+Remove the specified columns from the Hobby_Kids dataset:
+
+```{r}
+Hobby_Data <- Hobby_Data[, !(colnames(Hobby_Data) %in% c("School", "Medals"))]
+```
+
+sample of our dataset after finishing from pre-processing:
+
+```{r}
+sample(Hobby_Data)
+```
+we can see that the two columns are deleted("School", "Medals").
+
+
+
+
+**Balanced Data**
+```{r}
+# Calculate class imbalance
+class_imbalance <- max(prop.table(table(Hobby_Data$`Predicted Hobby`))) - min(prop.table(table(Hobby_Data$`Predicted Hobby`)))
+
+# Print the result
+print(class_imbalance)
+```
+if class_imbalance is close to 0, it suggests that the proportions of different classes are relatively similar, indicating a balanced dataset. Conversely, if class_imbalance is larger, it suggests a more significant imbalance between the classes.
+The calculated class imbalance value of 0.1805122 suggests that the distribution of classes in the "Predicted_Hobby" column of the dataset is relatively balanced. The class imbalance is a measure of the difference between the proportions of the most prevalent and least prevalent classes. In this case, the value is close to 0, indicating that there is a minimal difference between the proportions of different classes. A lower-class imbalance value is generally desirable, as it signifies a more even distribution of instances across classes, which can be beneficial for the training and performance of machine learning models.
+
+
+
+**\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\--**
+
+
+
+
+**5.Data Mining Technique**
+
+**Classification Technique:**
+
+In the realm of classification for data mining, the selection of attributes or features plays a pivotal role in building robust models. This process involves identifying the most informative attributes that aid in accurately predicting the target variable. Simultaneously, we choose three different split sizes: ("90%", "10%"), ("80%", "20%"), and ("70%", "30%"). These varying sizes are selected to provide insight into the model's performance with different amounts of data, which is vital for detecting unique patterns and confirming the model's consistency in various situations.
+
+1-Information Gain (IG): Information Gain serves as a criterion to determine the relevance of attributes by measuring the amount of information provided by each attribute. Higher Information Gain suggests attributes that are more influential in the classification process.
+
+R Packages and Methods: R Package: rpart Method: Decision Tree (implemented via rpart package) Procedure: Using the rpart package in R, the decision tree model is built by partitioning the dataset based on the attribute with the highest Information Gain. The parms = list(split = "information") parameter signifies the use of Information Gain for splitting.
+
+2-Gini Index: Gini Index, employed in decision tree algorithms like CART, quantifies the probability of misclassifying a randomly chosen element based on the distribution of labels in a subset. It identifies attributes that minimize misclassification and contribute significantly to the classification process.
+
+R Packages and Methods: R Package: rpart Method: Decision Tree (using rpart package) Procedure: Utilizing the rpart package, the decision tree model is constructed based on the Gini Index. The Gini Index helps determine attribute importance and guides the splitting of nodes in the tree for optimal classification.
+
+3-Gain Ratio: The Gain Ratio is an enhancement of Information Gain that addresses the bias towards attributes with a larger number of values. It normalizes the Information Gain by considering the intrinsic information of each attribute.
+
+R Packages and Methods: R Package: C50 Method: Decision Tree (via C50 package) Procedure: The C50 package in R facilitates the implementation of the Gain Ratio within a decision tree framework. By employing this package, the model accounts for attribute selection based on the Gain Ratio, ensuring a more balanced evaluation of attributes. In these techniques, the choice of methodology---Decision Trees based on different attribute selection measures---provides a versatile approach to classification. The selection of the most appropriate method often involves experimentation and comparative analysis to determine which attribute selection measure yields the most accurate and interpretable models for the given dataset.
+
+Each method allows for a unique perspective on attribute importance, contributing to the overall accuracy and robustness of the classification model. Experimentation with these techniques helps in understanding the impact of attribute selection on model performance, providing valuable insights into feature importance and classification accuracy.
+
+**Clustering Techniques:**
+
+since the k-mean does not suitable to our data because the k-means algorithm is not applicable to categorical data, because it relies on the Euclidean distance metric tomeasure the similarity between data points.and other things we mention later,we decide to use k-medoids(PAM).
+Unlike k-means, k-medoids does not rely on the mean as a representative centroid but employs medoids, which are actual data
+points within the clusters, and the algorithm defines clusters based on partitioning around medoids. This feature makes k-medoids particularly
+suitable for categorical data.
+
+since clustering apply with a data set without ground truth we remove it before we start to make clustering,
+first we convert type from factor columns to numeric then scaled all columns, then we make validation to determined how many clusters by using (Silhouette coefficient,Elbow method, average silhouette) method 
+
+second we apply PAM for 3 number of cluster with calculation of (BCubed recall, BCubed precision,wws, average silhouette width)
+
+third after we apply PAM and some methods for every number of cluster, we compare the result and chose k=3 to be the best number of cluster based on our calculation and visuals.
+
+Packages Used: ggplot2: Enables visually appealing and customizable plots, widely used for data visualization in R. magrittr: Facilitates writing readable code by employing the pipe operator (%\>%) for data manipulation operations. dplyr: Offers tools for data manipulation and transformation, providing functions for filtering, selecting, and arranging data. factoextra: Useful for extracting and visualizing information from principal component analysis (PCA) and clustering results. cluster: Provides functions for clustering algorithms such as k-means. k-medoids, hierarchical clustering .
+
+
+
+
+**\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\--**
+
+
+
+
+**6.Implement Classification and clustering**
+
+
+**#1#Classification**
+
+After preprocessing, we will proceed to the classification step. In this phase, as part of supervised learning, we will apply a classification algorithm to assign each data point into predefined categories based on its attributes. This involves selecting the most relevant features that have been cleaned and formatted during preprocessing. The selected model will then learn from training data, enabling it to predict the category of new, unseen data accurately. This step is essential for making informed decisions or predictions based on the data.
+
+We implement a decision tree on the dataset, which has been partitioned into Training and Test sets using the percentage split method. This method ensures that each subset is a randomized, representative sample of the entire dataset, thus minimizing bias and enabling consistent model performance evaluation. We choose three different split sizes: ("90%", "10%"), ("80%", "20%"), and ("70%", "30%"). These varying sizes are selected to provide insight into the model's performance with different amounts of data, which is vital for detecting unique patterns and confirming the model's consistency in various situations.
+
+In the final steps, we utilize data visualization tools to create visual representations of our decision trees. Additionally, we conduct an exhaustive evaluation of the model, employing a "Confusion Matrix" to illustrate the outcomes clearly.
+
+
+
+**Information Gain**
+
+Information Gain is particularly useful when dealing with categorical target variables using Information Gain for the initial partitioning of a dataset when building a decision tree It's based on the concept of entropy and aims to maximize the homogeneity of subsets after each split. This approach helps create an effective decision tree by selecting features that provide the most information for predicting the target variable.[4]
+
+
+**1-Information Gain(70%,30%)**
+
+```{r}
+# Load the required packages
+library(rpart)
+library(rpart.plot)
+library(caret)
+
+# Set the seed for reproducibility
+set.seed(1234)
+
+# Split the data into training and testing sets
+ind <- sample(2, nrow(Hobby_Data), replace=TRUE, prob=c(0.7, 0.3))
+trainData <- Hobby_Data[ind == 1,]
+testData <- Hobby_Data[ind == 2,]
+
+# Define the formula for the decision tree
+myFormula <- `Predicted Hobby` ~ Scholarship + Fav_sub + Projects + Grasp_pow + Time_sprt + Career_sprt + Act_sprt + Fant_arts + Won_arts + Time_art + Olympiad_Participation
+
+# Create the decision tree model with the "information" splitting criterion
+Hobby_Data_ctree <- rpart(myFormula, data = trainData, method = "class", parms = list(split = "information"))
+
+
+
+
+
+# Print the decision tree
+print(Hobby_Data_ctree)
+
+# Plot the decision tree
+
+rpart.plot(Hobby_Data_ctree)
+
+
+
+
+```
+
+**Decision Tree Analysis Using Information gain(70/30):**
+
+In Frist Tree ,we devide dataset into training set and test set with size(%70,%30) respectively. As you can see in the figure, the root node ("Career_sprt") serves as the starting point for the classification process since have the heights Gain. The dataset has a distribution of approximately 42.47% for class 1("Academics"), 25.92% for class 2("Arts"), and 31.61% for class 3 ("Sports").
+
+The tree further branches based on the values of the "Career_sprt" if equal 0, tree branches based on"Won_arts" ,and majority of instances fall into "Acadimcs", constituting 63.93% , if"Won_arts" equal 0 or2 In this case the tree terminates with a leaf node indicating a high probability 89.08% for "Acadimcs".else the instances are classified based on "Fant_arts" into "Arts" with a probability 88%,if equal 0 the instances are classified into "Academics" with a probability of 73% ,else the instances are classified into "Arts" with a high probability 96%, if "Career_sprt" is 1, the tree further branches based on the "Fant_arts" into "Sports" with a probability 80%. If "Fant_arts" is 1 , there is another split based on the "Time_art" feature into "Arts" with a probability 49%. If "Time_art" is greater than or equal to 3, the instances are classified into "Arts" with a probability of 87% . On the other hand, if "Time_art" is less than 3, the instances are classified into "Sports" with a probability of 65% .If "Fant_arts" not equal 1 , the instances are classified into "Sports" with a high probability 95%, as indicated by the leaf node.
+
+**First Confusion matrix**
+
+```{r}
+# Predict on the test data
+testPred <- predict(Hobby_Data_ctree, newdata = testData, type = 'class')
+
+# Check the accuracy of the model
+accuracy <- sum(testPred == testData$`Predicted Hobby`) / nrow(testData) * 100
+cat('Accuracy:', accuracy, '\n')
+
+# Create a confusion matrix
+conf_matrix <- table(Actual = testData$`Predicted Hobby`, Predicted = testPred)
+
+# Calculate precision for each class
+precision_class_1 <- conf_matrix[1, 1] / sum(conf_matrix[1, ])
+precision_class_2 <- conf_matrix[2, 2] / sum(conf_matrix[2, ])
+precision_class_3 <- conf_matrix[3, 3] / sum(conf_matrix[3, ])
+
+# Calculate sensitivity for each class
+sensitivity_class_1 <- conf_matrix[1, 1] / sum(conf_matrix[1, ])
+sensitivity_class_2 <- conf_matrix[2, 2] / sum(conf_matrix[2, ])
+sensitivity_class_3 <- conf_matrix[3, 3] / sum(conf_matrix[3, ])
+
+# Calculate specificity for each class
+specificity_class_1 <- sum(diag(conf_matrix[-1, -1])) / sum(conf_matrix[-1, ])
+specificity_class_2 <- sum(conf_matrix[c(1, 3), c(1, 3)]) / sum(conf_matrix[c(1, 3), ])
+specificity_class_3 <- sum(conf_matrix[c(1, 2), c(1, 2)]) / sum(conf_matrix[c(1, 2), ])
+
+# Calculate macro-average sensitivity
+macro_avg_sensitivity <- (sensitivity_class_1 + sensitivity_class_2 + sensitivity_class_3) / 3
+
+# Calculate macro-average specificity
+macro_avg_specificity <- (specificity_class_1 + specificity_class_2 + specificity_class_3) / 3
+
+# Calculate macro-average precision
+macro_avg_precision <- (precision_class_1 + precision_class_2 + precision_class_3) / 3
+
+# Print macro-average sensitivity
+cat('Average Sensitivity:', macro_avg_sensitivity, '\n')
+
+# Print macro-average specificity
+cat('Average Specificity:', macro_avg_specificity, '\n')
+
+# Print macro-average precision
+cat('Average Precision:', macro_avg_precision, '\n')
+
+
+
+
+
+
+# Print precision for each class
+cat('Precision for Class 1:', precision_class_1, ' \n')
+
+cat('Precision for Class 2:', precision_class_2, '  \n')
+cat('Precision for Class 3:', precision_class_3, ' \n')
+
+# Print sensitivity for each class
+cat('Sensitivity for Class 1:', sensitivity_class_1, '\n')
+cat('Sensitivity for Class 2:', sensitivity_class_2, '\n')
+cat('Sensitivity for Class 3:', sensitivity_class_3, '\n')
+
+# Print specificity for each class
+cat('Specificity for Class 1:', specificity_class_1, '\n')
+cat('Specificity for Class 2:', specificity_class_2, '\n')
+cat('Specificity for Class 3:', specificity_class_3, '\n')
+
+
+
+
+```
+
+
+
+**2-Information Gain(80%,20%)**
+
+```{r}
+library(rpart)
+
+library(caTools)
+library(rpart.plot)
+library(caret)
+
+# Set the seed for reproducibility
+set.seed(1234)
+
+# Split the data into training and testing sets
+ind <- sample(2, nrow(Hobby_Data), replace=TRUE, prob=c(0.8, 0.2))
+trainData <- Hobby_Data[ind == 1,]
+testData <- Hobby_Data[ind == 2,]
+
+# Define the formula for the decision tree
+myFormula <- `Predicted Hobby` ~ Scholarship + Fav_sub + Projects + Grasp_pow + Time_sprt + Career_sprt + Act_sprt + Fant_arts + Won_arts + Time_art + Olympiad_Participation
+
+# Create the decision tree model with the "information" splitting criterion
+Hobby_Data_ctree <- rpart(myFormula, data = trainData, method = "class", parms = list(split = "information"))
+
+
+
+
+
+# Print the decision tree
+print(Hobby_Data_ctree)
+
+# Plot the decision tree
+
+rpart.plot(Hobby_Data_ctree)
+
+
+
+
+
+
+```
+
+**Decision Tree Analysis Using Information gain(80/20):**
+
+In Second Tree ,we devide dataset into training set and test set with size(%80,%20) respectively. As you can see in the figure, the root node ("Career_sprt") serves as the starting point for the classification process since have the heights Gain. The dataset has a distribution of approximately 43%for class1 ("Academics"), 26% for class 2("Arts"), and 31% for class 3 ("Sports").
+
+The tree further branches based on the values of the "Career_sprt" if equal 0, tree branches based on"Won_arts" ,and majority of instances fall into "Acadimcs", constituting 65% , if"Won_arts" equal 0 or2 In this case the tree terminates with a leaf node indicating a high probability 90% for "Acadimcs".else the instances are classified based on "Fant_arts"into "Arts" with a probability 88%,if equal 0 the instances are classified into "Academics" with a probability of 72% ,else the instances are classified into "Arts" with a high probability 96%, if "Career_sprt" is 1, the tree further branches based on the "Fant_arts" into "Sports" with a probability 78%. If "Fant_arts" is 1 , there is another split based on the "Time_art" into "Arts" with a probability 50%. If "Time_art" is greater than or equal to 3, the instances are classified into "Arts" with a probability of 85% . On the other hand, if "Time_art" is less than 3, the instances are classified into "Sports" with a probability of 58% .If "Fant_arts" If not equal 1 , the instances are classified into "Sports" with a high probability 94%, as indicated by the leaf node.
+
+**Second Confusion matrix**
+
+```{r}
+
+# Predict on the test data
+testPred <- predict(Hobby_Data_ctree, newdata = testData, type = 'class')
+
+# Check the accuracy of the model
+accuracy <- sum(testPred == testData$`Predicted Hobby`) / nrow(testData) * 100
+cat('Accuracy:', accuracy, '\n')
+
+# Create a confusion matrix
+conf_matrix <- table(Actual = testData$`Predicted Hobby`, Predicted = testPred)
+
+# Calculate precision for each class
+precision_class_1 <- conf_matrix[1, 1] / sum(conf_matrix[1, ])
+precision_class_2 <- conf_matrix[2, 2] / sum(conf_matrix[2, ])
+precision_class_3 <- conf_matrix[3, 3] / sum(conf_matrix[3, ])
+
+# Calculate sensitivity for each class
+sensitivity_class_1 <- conf_matrix[1, 1] / sum(conf_matrix[1, ])
+sensitivity_class_2 <- conf_matrix[2, 2] / sum(conf_matrix[2, ])
+sensitivity_class_3 <- conf_matrix[3, 3] / sum(conf_matrix[3, ])
+
+# Calculate specificity for each class
+specificity_class_1 <- sum(diag(conf_matrix[-1, -1])) / sum(conf_matrix[-1, ])
+specificity_class_2 <- sum(conf_matrix[c(1, 3), c(1, 3)]) / sum(conf_matrix[c(1, 3), ])
+specificity_class_3 <- sum(conf_matrix[c(1, 2), c(1, 2)]) / sum(conf_matrix[c(1, 2), ])
+
+# Calculate macro-average sensitivity
+macro_avg_sensitivity <- (sensitivity_class_1 + sensitivity_class_2 + sensitivity_class_3) / 3
+
+# Calculate macro-average specificity
+macro_avg_specificity <- (specificity_class_1 + specificity_class_2 + specificity_class_3) / 3
+
+# Calculate macro-average precision
+macro_avg_precision <- (precision_class_1 + precision_class_2 + precision_class_3) / 3
+
+# Print macro-average sensitivity
+cat('Average Sensitivity:', macro_avg_sensitivity, '\n')
+
+# Print macro-average specificity
+cat('Average Specificity:', macro_avg_specificity, '\n')
+
+# Print macro-average precision
+cat('Average Precision:', macro_avg_precision, '\n')
+
+
+
+
+
+
+# Print precision for each class
+cat('Precision for Class 1:', precision_class_1, ' \n')
+
+cat('Precision for Class 2:', precision_class_2, '  \n')
+cat('Precision for Class 3:', precision_class_3, ' \n')
+
+# Print sensitivity for each class
+cat('Sensitivity for Class 1:', sensitivity_class_1, '\n')
+cat('Sensitivity for Class 2:', sensitivity_class_2, '\n')
+cat('Sensitivity for Class 3:', sensitivity_class_3, '\n')
+
+# Print specificity for each class
+cat('Specificity for Class 1:', specificity_class_1, '\n')
+cat('Specificity for Class 2:', specificity_class_2, '\n')
+cat('Specificity for Class 3:', specificity_class_3, '\n')
+
+
+
+
+
+
+
+```
+
+**3-Information Gain(90%,10%)**
+
+```{r}
+library(rpart)
+
+library(caTools)
+library(rpart.plot)
+library(caret)
+# Set the seed for reproducibility
+set.seed(1234)
+
+# Split the data into training and testing sets
+ind <- sample(2, nrow(Hobby_Data), replace=TRUE, prob=c(0.9, 0.1))
+trainData <- Hobby_Data[ind == 1,]
+testData <- Hobby_Data[ind == 2,]
+
+# Define the formula for the decision tree
+myFormula <- `Predicted Hobby` ~ Scholarship + Fav_sub + Projects + Grasp_pow + Time_sprt + Career_sprt + Act_sprt + Fant_arts + Won_arts + Time_art + Olympiad_Participation
+
+# Create the decision tree model with the "information" splitting criterion
+Hobby_Data_ctree <- rpart(myFormula, data = trainData, method = "class", parms = list(split = "information"))
+
+
+
+# Print the decision tree
+print(Hobby_Data_ctree)
+
+# Plot the decision tree
+
+rpart.plot(Hobby_Data_ctree)
+
+
+
+
+```
+
+**Decision Tree Analysis Using Information gain(90/10):**
+
+In Third Tree ,we devide dataset into training set and test set with size(%90,%10) respectively. As you can see in the figure, the root node ("Career_sprt") serves as the starting point for the classification process since have the heights Gain. The dataset has a distribution of approximately 43% for class 1("Academics"), 25% for class 2("Arts"), and 32% for class 3 ("Sports").
+
+The tree further branches based on the values of the "Career_sprt" if equal 0, tree branches based on"Won_arts" ,and majority of instances fall into "Acadimcs", constituting 65% , if"Won_arts" equal 0 or 2 In this case the tree terminates with a leaf node indicating a high probability 90% for "Acadimcs".else the instances are classified based on "Fant_arts"into "Arts" with a probability 87%,if equal 0 the instances are classified into "Academics" with a probability of 74% ,else the instances are classified into "Arts" with a high probability 96%, if "Career_sprt" is 1, the tree further branches based on the "Fant_arts" into "Sports" with a probability 79%. If "Fant_arts" is 1 , there is another split based on the "Time_art" into "Arts" with a probability 48%. If "Time_art" is greater than or equal to 3, the instances are classified into "Arts" with a probability of 84% . On the other hand, if "Time_art" is less than 3, the instances are classified based on"Act_sprt " into "Sports" with a probability of 58% .if "Act_sprt" equal 0 the instances are classified into "Academics" with a probability of 59%, other hand the instances are classified into "Sports" with a probability of 78%. If "Fant_arts" not equal 1 , the instances are classified into "Sports" with a high probability 94%, as indicated by the leaf node.
+
+**Third Confusion matrix**
+
+```{r}
+
+# Predict on the test data
+testPred <- predict(Hobby_Data_ctree, newdata = testData, type = 'class')
+
+# Check the accuracy of the model
+accuracy <- sum(testPred == testData$`Predicted Hobby`) / nrow(testData) * 100
+cat('Accuracy:', accuracy, '\n')
+
+# Create a confusion matrix
+conf_matrix <- table(Actual = testData$`Predicted Hobby`, Predicted = testPred)
+
+# Calculate precision for each class
+precision_class_1 <- conf_matrix[1, 1] / sum(conf_matrix[1, ])
+precision_class_2 <- conf_matrix[2, 2] / sum(conf_matrix[2, ])
+precision_class_3 <- conf_matrix[3, 3] / sum(conf_matrix[3, ])
+
+# Calculate sensitivity for each class
+sensitivity_class_1 <- conf_matrix[1, 1] / sum(conf_matrix[1, ])
+sensitivity_class_2 <- conf_matrix[2, 2] / sum(conf_matrix[2, ])
+sensitivity_class_3 <- conf_matrix[3, 3] / sum(conf_matrix[3, ])
+
+# Calculate specificity for each class
+specificity_class_1 <- sum(diag(conf_matrix[-1, -1])) / sum(conf_matrix[-1, ])
+specificity_class_2 <- sum(conf_matrix[c(1, 3), c(1, 3)]) / sum(conf_matrix[c(1, 3), ])
+specificity_class_3 <- sum(conf_matrix[c(1, 2), c(1, 2)]) / sum(conf_matrix[c(1, 2), ])
+
+# Calculate macro-average sensitivity
+macro_avg_sensitivity <- (sensitivity_class_1 + sensitivity_class_2 + sensitivity_class_3) / 3
+
+# Calculate macro-average specificity
+macro_avg_specificity <- (specificity_class_1 + specificity_class_2 + specificity_class_3) / 3
+
+# Calculate macro-average precision
+macro_avg_precision <- (precision_class_1 + precision_class_2 + precision_class_3) / 3
+
+# Print macro-average sensitivity
+cat('Average Sensitivity:', macro_avg_sensitivity, '\n')
+
+# Print macro-average specificity
+cat('Average Specificity:', macro_avg_specificity, '\n')
+
+# Print macro-average precision
+cat('Average Precision:', macro_avg_precision, '\n')
+
+
+
+
+
+
+# Print precision for each class
+cat('Precision for Class 1:', precision_class_1, ' \n')
+
+cat('Precision for Class 2:', precision_class_2, '  \n')
+cat('Precision for Class 3:', precision_class_3, ' \n')
+
+# Print sensitivity for each class
+cat('Sensitivity for Class 1:', sensitivity_class_1, '\n')
+cat('Sensitivity for Class 2:', sensitivity_class_2, '\n')
+cat('Sensitivity for Class 3:', sensitivity_class_3, '\n')
+
+# Print specificity for each class
+cat('Specificity for Class 1:', specificity_class_1, '\n')
+cat('Specificity for Class 2:', specificity_class_2, '\n')
+cat('Specificity for Class 3:', specificity_class_3, '\n')
+
+
+```
+
+**Comparing Decision Tree Results Using Infromation gain:**
+After training three trees with different sizes, employing information gain as the selection measure, our analysis led to consistent accuracy results among the trees: Tree 1 (0.8932), Tree 2 (0.9057), and Tree 3 (0.8721). The minor discrepancies observed in these accuracy values could be attributed to the variations in dataset sizes. Investigating the impact of different training set sizes on model performance offers valuable insights into the intricate relationship between data size and accuracy.
+
+In the case of Tree 2, where a larger training set was employed (80% training, 20% testing), the model had the opportunity to grasp more robust patterns and relationships within the data. However, it is crucial to underscore the necessity of striking a balance between the sizes of the training and testing sets. For Tree 3, with a relatively smaller testing set (90% training, 10% testing), the accuracy estimate might be less reliable due to the limited sample size in the testing set.
+
+In summary, the utilization of information gain as the selection measure, coupled with different training set sizes, resulted in comparable accuracy outcomes. Achieving an optimal balance in the sizes of both training and testing datasets proves essential for ensuring accurate and generalizable model performance.
++------------------+-------------------+-------------------+-------------------+
+| information gain | 90 %t raining set | 80 %t raining set | 70 %t raining set |
+|                  |                   |                   |                   |
+|                  | 10% testing set:  | 20% testing set:  | 30% testing set:  |
++:================:+:=================:+:=================:+:=================:+
+| **Accuracy**     | 0.872             | 0.905             | 0.893             |
++------------------+-------------------+-------------------+-------------------+
+| **precision**    | 0.856             | 0.898             | 0.887             |
++------------------+-------------------+-------------------+-------------------+
+| **sensitivity**  | 0.856             | 0.898             | 0.887             |
++------------------+-------------------+-------------------+-------------------+
+| **specificity**  | 0.919             | 0.937             | 0.929             |
++------------------+-------------------+-------------------+-------------------+
+
+
+**Gini index**
+
+The Gini index, is a measure used in decision trees, specifically in the CART (Classification and Regression Trees) algorithm, to quantify how often a randomly chosen element would be incorrectly labeled if it was randomly labeled according to the distribution of labels in the subset. It reflects the probability of a particular variable being wrongly classified when it is randomly chosen.[5]   
+
+**1-Gini index(80%,20%)**
+
+Install necessary libraries
+
+```{r}
+install.packages("rpart")
+install.packages("rpart.plot")
+install.packages("caTools")
+install.packages("caret")
+
+```
+
+Load necessary libraries
+
+```{r}
+library(rpart)
+library(rpart.plot)
+library(caTools)
+library(caret)
+```
+
+Set a seed for reproducibility
+
+```{r}
+set.seed(123)
+
+```
+
+Split the dataset, 80% for training, 20% for testing
+
+```{r}
+split <- sample.split(Hobby_Data$`Predicted Hobby`, SplitRatio = 0.80)
+```
+
+Create the training set (80% of the data)
+
+```{r}
+training_set <- subset(Hobby_Data, split == TRUE)
+```
+
+Create the test set (20% of the data)
+
+```{r}
+test_set <- subset(Hobby_Data, split == FALSE)
+
+```
+
+Build a decision tree model on the training set
+
+```{r}
+tree <- rpart(`Predicted Hobby` ~ ., data = training_set, method = 'class')
+
+```
+
+
+Make predictions on the test set using the tree model
+
+```{r}
+predictions <- predict(tree, test_set, type = "class")
+```
+
+Confusion matrix
+
+```{r}
+conf_matrix <- table(Predicted = predictions, Actual = test_set$`Predicted Hobby`)
+```
+
+Calculate accuracy
+
+```{r}
+accuracy <- sum(diag(conf_matrix)) / sum(conf_matrix)
+```
+
+Initialize vectors to hold the metrics for each class
+
+```{r}
+precision <- numeric(length = nrow(conf_matrix))
+recall <- numeric(length = nrow(conf_matrix))
+specificity <- numeric(length = nrow(conf_matrix))
+```
+
+Calculate metrics for each class
+
+```{r}
+for (i in 1:nrow(conf_matrix)) {
+  TP <- conf_matrix[i, i]
+  FP <- sum(conf_matrix[, i]) - TP
+  FN <- sum(conf_matrix[i, ]) - TP
+  TN <- sum(conf_matrix) - TP - FP - FN
+  
+  precision[i] <- TP / (TP + FP)
+  recall[i] <- TP / (TP + FN)
+  specificity[i] <- TN / (TN + FP)
+}
+```
+
+Average the metrics if you want a single performance measure
+
+```{r}
+avg_precision <- mean(precision)
+avg_recall <- mean(recall)
+avg_specificity <- mean(specificity)
+```
+
+Output the evaluation metrics
+
+```{r}
+print(paste("Overall Accuracy:", accuracy))
+print(paste("Average Precision:", avg_precision))
+print(paste("Average Recall (Sensitivity):", avg_recall))
+print(paste("Average Specificity:", avg_specificity))
+```
+
+the metrics for each class:
+
+```{r}
+metrics <- data.frame(
+  Class = rownames(conf_matrix),
+  Precision = precision,
+  Recall = recall,
+  Specificity = specificity
+)
+```
+
+Print metrics
+
+```{r}
+print(metrics)
+
+```
+
+Plot the decision tree
+
+```{r}
+rpart.plot(tree)
+```
+
+**Decision Tree Analysis Using Gini Index(80/20):**
+ The decision tree delineates hobbies into 'Academics' (1), 'Arts' (2), and 'Sports' (3). Without a sports hobby ('Career_sprt' = 0), the model suggests a 62% chance of 'Academics'. With no arts hobby ('Fant_arts' = 0) and 'Won_arts' at 0 or 2, there's a 43% chance of an 'Academics' categorization. Conversely, for those with an arts hobby ('Fant_arts' = 1) and frequent arts activities ('Time_art' ≥ 3), These model show how likely the model is to predict each hobby based on the attributes' significance, as learned from the data with a 80% training portion
+
+**2-Gini index(90%,10%)**
+
+Install necessary libraries
+
+```{r}
+install.packages("rpart")
+install.packages("rpart.plot")
+install.packages("caTools")
+install.packages("caret")
+
+```
+
+Load necessary libraries
+
+```{r}
+library(rpart)
+library(rpart.plot)
+library(caTools)
+library(caret)
+```
+
+Set a seed for reproducibility
+
+```{r}
+set.seed(123)
+
+```
+
+Split the dataset, 90% for training, 10% for testing
+
+```{r}
+split <- sample.split(Hobby_Data$`Predicted Hobby`, SplitRatio = 0.90)
+```
+
+Create the training set (90% of the data)
+
+```{r}
+training_set <- subset(Hobby_Data, split == TRUE)
+```
+
+Create the test set (10% of the data)
+
+```{r}
+test_set <- subset(Hobby_Data, split == FALSE)
+
+```
+
+Build a decision tree model on the training set
+
+```{r}
+tree <- rpart(`Predicted Hobby` ~ ., data = training_set, method = 'class')
+
+```
+
+
+Make predictions on the test set using the tree model
+
+```{r}
+predictions <- predict(tree, test_set, type = "class")
+```
+
+Confusion matrix
+
+```{r}
+conf_matrix <- table(Predicted = predictions, Actual = test_set$`Predicted Hobby`)
+```
+
+Calculate accuracy
+
+```{r}
+accuracy <- sum(diag(conf_matrix)) / sum(conf_matrix)
+```
+
+Initialize vectors to hold the metrics for each class
+
+```{r}
+precision <- numeric(length = nrow(conf_matrix))
+recall <- numeric(length = nrow(conf_matrix))
+specificity <- numeric(length = nrow(conf_matrix))
+```
+
+Calculate metrics for each class
+
+```{r}
+for (i in 1:nrow(conf_matrix)) {
+  TP <- conf_matrix[i, i]
+  FP <- sum(conf_matrix[, i]) - TP
+  FN <- sum(conf_matrix[i, ]) - TP
+  TN <- sum(conf_matrix) - TP - FP - FN
+  
+  precision[i] <- TP / (TP + FP)
+  recall[i] <- TP / (TP + FN)
+  specificity[i] <- TN / (TN + FP)
+}
+```
+
+Average the metrics if you want a single performance measure
+
+```{r}
+avg_precision <- mean(precision)
+avg_recall <- mean(recall)
+avg_specificity <- mean(specificity)
+```
+
+Output the evaluation metrics
+
+```{r}
+print(paste("Overall Accuracy:", accuracy))
+print(paste("Average Precision:", avg_precision))
+print(paste("Average Recall (Sensitivity):", avg_recall))
+print(paste("Average Specificity:", avg_specificity))
+```
+
+the metrics for each class:
+
+```{r}
+metrics <- data.frame(
+  Class = rownames(conf_matrix),
+  Precision = precision,
+  Recall = recall,
+  Specificity = specificity
+)
+```
+
+Print metrics
+
+```{r}
+print(metrics)
+
+```
+
+
+Plot the decision tree
+
+```{r}
+rpart.plot(tree)
+```
+
+**Decision Tree Analysis Using Gini Index(90/10):**
+
+The decision tree classifies hobbies into 'Academics' (1), 'Arts' (2), and 'Sports' (3). A lack of a sports hobby ('Career_sprt' = 0) leads to a 63% chance of falling into 'Academics'. If someone is not engaged in an arts hobby ('Fant_arts' = 0) and 'Won_arts' is 0 or 2, there's a 43% probability of an 'Academics' categorization. For individuals engaged in an arts hobby ('Fant_arts' = 1) with a high level of arts activity ('Time_art' ≥ 3), the likelihood of a 'Sports' classification is 28%. These model show how likely the model is to predict each hobby based on the attributes' significance, as learned from the data with a 90% training portion.
+
+
+**3-Gini index(70%,30%)**
+
+Install necessary libraries
+
+```{r}
+install.packages("rpart")
+install.packages("rpart.plot")
+install.packages("caTools")
+install.packages("caret")
+
+```
+
+Load necessary libraries
+
+```{r}
+library(rpart)
+library(rpart.plot)
+library(caTools)
+library(caret)
+```
+
+Set a seed for reproducibility
+
+```{r}
+set.seed(123)
+
+```
+
+Split the dataset, 70% for training, 30% for testing
+
+```{r}
+split <- sample.split(Hobby_Data$`Predicted Hobby`, SplitRatio = 0.70)
+```
+
+Create the training set (70% of the data)
+
+```{r}
+training_set <- subset(Hobby_Data, split == TRUE)
+```
+
+Create the test set (20% of the data)
+
+```{r}
+test_set <- subset(Hobby_Data, split == FALSE)
+
+```
+
+Build a decision tree model on the training set
+
+```{r}
+tree <- rpart(`Predicted Hobby` ~ ., data = training_set, method = 'class')
+
+```
+
+Make predictions on the test set using the tree model
+
+```{r}
+predictions <- predict(tree, test_set, type = "class")
+```
+
+Confusion matrix
+
+```{r}
+conf_matrix <- table(Predicted = predictions, Actual = test_set$`Predicted Hobby`)
+```
+
+Calculate accuracy
+
+```{r}
+accuracy <- sum(diag(conf_matrix)) / sum(conf_matrix)
+```
+
+Initialize vectors to hold the metrics for each class
+
+```{r}
+precision <- numeric(length = nrow(conf_matrix))
+recall <- numeric(length = nrow(conf_matrix))
+specificity <- numeric(length = nrow(conf_matrix))
+```
+
+Calculate metrics for each class
+
+```{r}
+for (i in 1:nrow(conf_matrix)) {
+  TP <- conf_matrix[i, i]
+  FP <- sum(conf_matrix[, i]) - TP
+  FN <- sum(conf_matrix[i, ]) - TP
+  TN <- sum(conf_matrix) - TP - FP - FN
+  
+  precision[i] <- TP / (TP + FP)
+  recall[i] <- TP / (TP + FN)
+  specificity[i] <- TN / (TN + FP)
+}
+```
+
+Average the metrics if you want a single performance measure
+
+```{r}
+avg_precision <- mean(precision)
+avg_recall <- mean(recall)
+avg_specificity <- mean(specificity)
+```
+
+Output the evaluation metrics
+
+```{r}
+print(paste("Overall Accuracy:", accuracy))
+print(paste("Average Precision:", avg_precision))
+print(paste("Average Recall (Sensitivity):", avg_recall))
+print(paste("Average Specificity:", avg_specificity))
+```
+
+the metrics for each class:
+
+```{r}
+metrics <- data.frame(
+  Class = rownames(conf_matrix),
+  Precision = precision,
+  Recall = recall,
+  Specificity = specificity
+)
+```
+
+Print metrics
+
+```{r}
+print(metrics)
+
+```
+
+Plot the decision tree
+
+```{r}
+rpart.plot(tree)
+```
+
+**Decision Tree Analysis Using Gini Index(70/30):**
+
+The decision tree sorts hobbies into 'Academics' (1), 'Arts' (2), and 'Sports' (3). A non-sports hobby ('Career_sprt' = 0) results in a 63% probability of an 'Academics' categorization. If 'Fant_arts' is 0 and 'Won_arts' is 0 or 2, there's a 43% chance of being classified as 'Academics'. Conversely, for those involved in an arts hobby ('Fant_arts' = 1) with significant arts activity ('Time_art' ≥ 3), the model indicates a 28% probability of a 'Sports' hobby. This decision tree demonstrates the likelihood of predicting each hobby based on the importance of the attributes, as determined from the data trained with a 70% portion.
+
+**Comparing Decision Tree Results Using Gini Index:**
+
+Across Three Training-Test Sizes: The results of the decision trees from the 90/10, 80/20, and 70/30 dataset splits, there is a consistent pattern: 'Career_sprt' is always the root node, and the subsequent splits on 'Won_arts' and 'Fant_arts' are the same across all trees. This consistency in tree structure and the probabilities for predicting 'Academics' and 'Sports' across different splits suggest a stable and robust model that is reliable regardless of the training set size.
+
+the accuracies of three data splits reveals distinct outcomes: the (90,10) split leads with the highest accuracy at 0.91875, suggesting that a larger training portion is more effective in this case. The (70,30) split follows with an accuracy of 0.91060, showing strong performance even with a larger test set. However, the commonly used (80,20) split lags slightly behind, achieving an accuracy of 0.90625. This comparison highlights the impact of varying training and testing proportions on model accuracy.
+
+
++-----------------+------------------------------------+------------------------------------+------------------------------------+
+| Gini index      | 90 %t raining set 10% testing set: | 80 %t raining set 20% testing set: | 70 %t raining set 30% testing set: |
++:===============:+:==================================:+:==================================:+:==================================:+
+| **Accuracy**    | 0.91875                            | 0.906                              | 0.911                              |
++-----------------+------------------------------------+------------------------------------+------------------------------------+
+| **precision**   | 0.91850                            | 0.905                              | 0.909                              |
++-----------------+------------------------------------+------------------------------------+------------------------------------+
+| **sensitivity** | 0.91927                            | 0.909                              | 0.912                              |
++-----------------+------------------------------------+------------------------------------+------------------------------------+
+| **specificity** | 0.9578                             | 0.952                              | 0.954                              |
++-----------------+------------------------------------+------------------------------------+------------------------------------+
+
+
+**Gain Ratio**
+The third criterion employed for building the decision tree is Gain Ratio. Gain Ratio stands out as a significant metric in decision tree algorithms, especially in scenarios involving categorical target variables. It normalizes the reduction in entropy by taking into account the potential information content of the feature. This normalization process makes Gain Ratio particularly suitable for datasets with categorical target variables. By factoring in the intrinsic information of a split, Gain Ratio effectively mitigates bias towards features with higher levels, ensuring a more balanced evaluation of different attributes.[6]
+
+**1-Gain ratio(90%,10%)**
+
+Install necessary libraries
+
+```{r}
+install.packages("C50")
+install.packages("printr")
+install.packages("caret")
+```
+
+Load necessary libraries
+
+```{r}
+library(C50)
+library(printr)
+library(caret)
+```
+
+Set a seed for reproducibility
+
+```{r}
+set.seed(1958)
+
+```
+
+Splitting the data into training and test sets
+
+```{r}
+train_indices <- sample(1:nrow(Hobby_Data), 0.9 * nrow(Hobby_Data))
+Hobby.train <- Hobby_Data[train_indices, ]
+Hobby.test <- Hobby_Data[-train_indices, ]
+
+```
+
+Training the decision tree model
+
+```{r}
+model <- C5.0(`Predicted Hobby` ~ ., data = Hobby.train, control = C5.0Control(CF = 0.01))
+
+```
+
+Making predictions on the test set
+
+```{r}
+predictions <- predict(model, newdata = Hobby.test, type = 'class')
+```
+
+Create a confusion matrix from the predictions and actual values
+
+```{r}
+conf_matrix <- table(Predicted = predictions, Actual = Hobby.test$`Predicted Hobby`)
+```
+
+Calculate and print the accuracy of the model
+
+```{r}
+accuracy <- sum(diag(conf_matrix)) / sum(conf_matrix)
+print(paste('Accuracy on test data is:', accuracy))
+```
+
+Initialize vectors to hold the metrics for each class
+
+```{r}
+precision <- numeric(length = nrow(conf_matrix))
+recall <- numeric(length = nrow(conf_matrix))
+specificity <- numeric(length = nrow(conf_matrix))
+```
+
+Calculate metrics for each class
+
+```{r}
+for (i in 1:nrow(conf_matrix)) {
+  TP <- conf_matrix[i, i]
+  FP <- sum(conf_matrix[, i]) - TP
+  FN <- sum(conf_matrix[i, ]) - TP
+  TN <- sum(conf_matrix) - TP - FP - FN
+  
+  precision[i] <- TP / (TP + FP)
+  recall[i] <- TP / (TP + FN)
+  specificity[i] <- TN / (TN + FP)
+}
+```
+
+Average the metrics if you want a single performance measure
+
+```{r}
+avg_precision <- mean(precision)
+avg_recall <- mean(recall)
+avg_specificity <- mean(specificity)
+```
+
+Output the evaluation metrics
+
+```{r}
+print(paste("Overall Accuracy:", accuracy))
+print(paste("Average Precision:", avg_precision))
+print(paste("Average Recall (Sensitivity):", avg_recall))
+print(paste("Average Specificity:", avg_specificity))
+```
+
+print the metrics for each class:
+
+```{r}
+
+metrics <- data.frame(
+  Class = rownames(conf_matrix),
+  Precision = precision,
+  Recall = recall,
+  Specificity = specificity
+)
+```
+
+Print metrics
+
+```{r}
+print(metrics)
+```
+
+Generate and print additional performance metrics using caret package
+
+```{r}
+confusionMatrix(predictions, Hobby.test$`Predicted Hobby`)
+```
+
+Plot the decision tree
+
+```{r}
+plot(model)
+```
+
+**Decision Tree Analysis Using Gain Ratio(90%/10%):**
+
+In First Tree ,we devide dataset into training set and test set with size(%90,%10) respectively. As you can see in the figure, the root node is "Career_sprt" , class 1("Academics"), class 2("Arts"), and class 3 ("Sports").
+
+Node "Career_sprt" The first decision is based on whether the value of the "Career_sprt" attribute is 0. then check if "Won_arts" is either 0 or 2.If" Won_arts" is 0 or 2 , predict"Academic".then check If "Fant_arts" is 1 "and Won_arts" is 1, predict "Arts".If "Fant_arts" is 0 and Won_arts is 0 or 2, then check if Olympiad_Participation is 1.If Olympiad_Participation is 1 predict "Academics".(When Olympiad_Participation is 0) If "Olympiad_Participation" is 0 and "Fant_arts" is 0, then check if "Grasp_pow" is less than or equal to 4 , predict class"Arts".When Career_sprt is 1, then check if "Fant_arts" is 0 then predict "Sports". If "Fant_arts" is 1, then check if "Time_art" is greater than 2.check if "Time_art" is less than or equal to 2, then check if "Act_sprt" is 1 or 0.If Act_sprt is 1, predict "Sports". If Act_sprt is 0, then check if Olympiad_Participation is 0 predict "Arts". If "Olympiad_Participation" is 1, predict "Academics".When Time_art is greater than 2 ,If Won_arts is 0, predict class "Sports".
+
+
+**2-Gain ratio(80%,20%)**
+
+Install necessary libraries
+
+```{r}
+install.packages("C50")
+install.packages("printr")
+install.packages("caret")
+```
+
+Load necessary libraries
+
+```{r}
+
+library(C50)
+library(printr)
+library(caret)
+```
+
+Set a seed for reproducibility
+
+```{r}
+set.seed(1958)
+
+```
+
+Splitting the data into training and test sets
+
+```{r}
+train_indices <- sample(1:nrow(Hobby_Data), 0.8 * nrow(Hobby_Data))
+Hobby.train <- Hobby_Data[train_indices, ]
+Hobby.test <- Hobby_Data[-train_indices, ]
+
+```
+
+Training the decision tree model
+
+```{r}
+model <- C5.0(`Predicted Hobby` ~ ., data = Hobby.train, control = C5.0Control(CF = 0.01))
+
+```
+
+Making predictions on the test set
+
+```{r}
+predictions <- predict(model, newdata = Hobby.test, type = 'class')
+```
+
+Create a confusion matrix from the predictions and actual values
+
+```{r}
+conf_matrix <- table(Predicted = predictions, Actual = Hobby.test$`Predicted Hobby`)
+```
+
+Calculate and print the accuracy of the model
+
+```{r}
+accuracy <- sum(diag(conf_matrix)) / sum(conf_matrix)
+print(paste('Accuracy on test data is:', accuracy))
+```
+
+Initialize vectors to hold the metrics for each class
+
+```{r}
+precision <- numeric(length = nrow(conf_matrix))
+recall <- numeric(length = nrow(conf_matrix))
+specificity <- numeric(length = nrow(conf_matrix))
+```
+
+Calculate metrics for each class
+
+```{r}
+for (i in 1:nrow(conf_matrix)) {
+  TP <- conf_matrix[i, i]
+  FP <- sum(conf_matrix[, i]) - TP
+  FN <- sum(conf_matrix[i, ]) - TP
+  TN <- sum(conf_matrix) - TP - FP - FN
+  
+  precision[i] <- TP / (TP + FP)
+  recall[i] <- TP / (TP + FN)
+  specificity[i] <- TN / (TN + FP)
+}
+```
+
+Average the metrics if you want a single performance measure
+
+```{r}
+avg_precision <- mean(precision)
+avg_recall <- mean(recall)
+avg_specificity <- mean(specificity)
+```
+
+Output the evaluation metrics
+
+```{r}
+print(paste("Overall Accuracy:", accuracy))
+print(paste("Average Precision:", avg_precision))
+print(paste("Average Recall (Sensitivity):", avg_recall))
+print(paste("Average Specificity:", avg_specificity))
+```
+
+print the metrics for each class:
+
+```{r}
+
+metrics <- data.frame(
+  Class = rownames(conf_matrix),
+  Precision = precision,
+  Recall = recall,
+  Specificity = specificity
+)
+```
+
+Print metrics
+
+```{r}
+print(metrics)
+```
+
+Generate and print additional performance metrics using caret package
+
+```{r}
+confusionMatrix(predictions, Hobby.test$`Predicted Hobby`)
+```
+
+Plot the decision tree
+
+```{r}
+plot(model)
+```
+
+**Decision Tree Analysis Using Gain Ratio(80/20):**
+
+The decision tree depicted classifies hobbies into 'Academics' (1), 'Arts' (2), and 'Sports' (3). It starts with 'Career_sprt' a value of 0 leads to 'Won_arts'. If 'Won_arts' is 0 or 2, the model suggests 'Academics' or 'Arts'. If 'Career_sprt' is 1, 'Fant_arts' is considered next; a value of 0 after 'Won_arts' being 1 points towards 'Arts', while a value of 1 leads to 'Olympiad_Participation', which, if 1, indicates 'Academics'. Conversely, a high 'Grasp_pow' (\>4) predicts 'Sports'.
+
+
+
+**3-Gain ratio(70%,30%)**
+
+Install necessary libraries
+
+```{r}
+install.packages("C50")
+install.packages("printr")
+install.packages("caret")
+```
+
+Load necessary libraries
+
+```{r}
+
+library(C50)
+library(printr)
+library(caret)
+```
+
+Set a seed for reproducibility
+
+```{r}
+set.seed(1958)
+
+```
+
+Splitting the data into training and test sets
+
+```{r}
+train_indices <- sample(1:nrow(Hobby_Data), 0.7 * nrow(Hobby_Data))
+Hobby.train <- Hobby_Data[train_indices, ]
+Hobby.test <- Hobby_Data[-train_indices, ]
+
+```
+
+Training the decision tree model
+
+```{r}
+model <- C5.0(`Predicted Hobby` ~ ., data = Hobby.train, control = C5.0Control(CF = 0.01))
+
+```
+
+Making predictions on the test set
+
+```{r}
+predictions <- predict(model, newdata = Hobby.test, type = 'class')
+```
+
+Create a confusion matrix from the predictions and actual values
+
+```{r}
+conf_matrix <- table(Predicted = predictions, Actual = Hobby.test$`Predicted Hobby`)
+```
+
+Calculate and print the accuracy of the model
+
+```{r}
+accuracy <- sum(diag(conf_matrix)) / sum(conf_matrix)
+print(paste('Accuracy on test data is:', accuracy))
+```
+
+Initialize vectors to hold the metrics for each class
+
+```{r}
+precision <- numeric(length = nrow(conf_matrix))
+recall <- numeric(length = nrow(conf_matrix))
+specificity <- numeric(length = nrow(conf_matrix))
+```
+
+Calculate metrics for each class
+
+```{r}
+for (i in 1:nrow(conf_matrix)) {
+  TP <- conf_matrix[i, i]
+  FP <- sum(conf_matrix[, i]) - TP
+  FN <- sum(conf_matrix[i, ]) - TP
+  TN <- sum(conf_matrix) - TP - FP - FN
+  
+  precision[i] <- TP / (TP + FP)
+  recall[i] <- TP / (TP + FN)
+  specificity[i] <- TN / (TN + FP)
+}
+```
+
+Average the metrics if you want a single performance measure
+
+```{r}
+avg_precision <- mean(precision)
+avg_recall <- mean(recall)
+avg_specificity <- mean(specificity)
+```
+
+Output the evaluation metrics
+
+```{r}
+print(paste("Overall Accuracy:", accuracy))
+print(paste("Average Precision:", avg_precision))
+print(paste("Average Recall (Sensitivity):", avg_recall))
+print(paste("Average Specificity:", avg_specificity))
+```
+
+print the metrics for each class:
+
+```{r}
+
+metrics <- data.frame(
+  Class = rownames(conf_matrix),
+  Precision = precision,
+  Recall = recall,
+  Specificity = specificity
+)
+```
+
+Print metrics
+
+```{r}
+print(metrics)
+```
+
+Generate and print additional performance metrics using caret package
+
+```{r}
+confusionMatrix(predictions, Hobby.test$`Predicted Hobby`)
+```
+
+Plot the decision tree
+
+```{r}
+plot(model)
+```
+
+**Decision Tree Analysis Using Gain Ratio(70%/30%):**
+
+In Third Tree ,we devide dataset into training set and test set with size(%70,%30) respectively. As you can see in the figure, the root node is "Career_sprt" , class 1("Academics"), class 2("Arts"), and class 3 ("Sports").
+
+The first decision is based on whether the value of the "Career_sprt" attribute is 0.If "Career_sprt" is 0, then check if "Won_arts" is either 0 or 2.predict "Academics".If "Won_arts" is 1, then check if "Fant_arts" is 1,predict "Arts".If ""Fant_arts is 0 and"Won_arts" is 0 or 2, then check if "Time_art" is less than or equal to 2,predict "Academics". If "Time_art" is greater than 2, predict "Arts".
+
+If "Career_sprt"is 1, then check if "Fant_arts" is 0, predict "Sports".If "Fant_arts"is 1, then check if "Time_art" is less than or equal to 2 check if "Act_sprt" is 0,predict "Academics" .If "Act_sprt" is 1 predict "Sports". if "Time_art" is greater than 2, then check if "Won_arts" is 0 predict "Sports".If "Won_arts" is 1 or 2 predict "Arts".
+
+**Comparing Decision Tree Results Using Gain Ratio**
+
+Across Three Training-Test Sizes: The accuracy rates -0.8944 for the 90:10 split, 0.8939 for the 70:30 split, and 0.8879 for the 80:20 split -- indicate only slight variations, with the 90:10 split being marginally better.
+
+
++-----------------+-------------------+-------------------+-------------------+
+| Gain ratio      | 90 %t raining set | 80 %t raining set | 70 %t raining set |
+|                 |                   |                   |                   |
+|                 | 10% testing set:  | 20% testing set:  | 30% testing set:  |
++:===============:+:=================:+:=================:+:=================:+
+| **Accuracy**    | 0.8944            | 0.888             | 0.893970893970894 |
++-----------------+-------------------+-------------------+-------------------+
+| **precision**   | 0.892             | 0.881             | 0.890             |
++-----------------+-------------------+-------------------+-------------------+
+| **sensitivity** | 0.891             | 0.890             | 0.902             |
++-----------------+-------------------+-------------------+-------------------+
+| **specificity** | 0.945             | 0.943             | 0.947             |
++-----------------+-------------------+-------------------+-------------------+
+
+
+
+
+
+
+
+
+
+**#2#Clustering**
+
+first we use Hobby_proc that is version of Hobby data after pre-processing
+```{r}
+str(Hobby_proc)
+```
+
+**To convert type from factor columns to numeric**
+
+```{r}
+
+Hobby_proc$Fav_sub <-as.numeric(Hobby_proc$Fav_sub)
+
+Hobby_proc$Olympiad_Participation <-as.numeric(Hobby_proc$Olympiad_Participation)
+
+Hobby_proc$Projects <-as.numeric(Hobby_proc$Projects)
+
+Hobby_proc$Scholarship <-as.numeric(Hobby_proc$Scholarship)
+
+Hobby_proc$Career_sprt <-as.numeric(Hobby_proc$Career_sprt)
+
+Hobby_proc$Act_sprt <-as.numeric(Hobby_proc$Act_sprt)
+
+Hobby_proc$Fant_arts <-as.numeric(Hobby_proc$Fant_arts)
+
+Hobby_proc$Won_arts <-as.numeric(Hobby_proc$Won_arts)
+
+Hobby_proc$`Predicted Hobby` <-as.numeric(Hobby_proc$`Predicted Hobby` )
+```
+
+**Scaled All Columns**
+
+```{r}
+Hobby_proc <-scale(Hobby_proc)
+```
+
+**Data set without ground truth**
+
+```{r}
+Hobby_Data2 <- Hobby_proc[, !(colnames(Hobby_proc) %in% c("Predict Hobby"))]
+```
+
+
+Our data set exhibits a balanced distribution among class labels, with
+"academic," "art," and "sport" constituting 43.6%, 25.6%, and 30.8% of
+the total, respectively. This balanced distribution is advantageous for
+both classification and clustering tasks. In classification, a balanced
+data set helps prevent the model from favoring one class over the
+others, ensuring that the learning algorithm is exposed to a
+representative set of examples from each category. This balance promotes
+the development of a model that generalizes well across all classes,
+enhancing its predictive performance on new, unseen data. In clustering,
+a balanced data set aids in forming clusters that are more evenly
+distributed, allowing for a comprehensive understanding of patterns and
+relationships across diverse categories. Balanced data sets often lead
+to more accurate and fair clustering results, enabling meaningful
+insights into the underlying structures within each class.
+
+**require packages/Library**
+
+```{r}
+install.packages("ggplot2") 
+install.packages("magrittr")
+install.packages("dplyr")
+library(factoextra) 
+library(cluster)
+library(dplyr)
+```
+
+**k-mean clustering**
+
+**Validation:**
+Determining the right number of clusters before starting the clustering
+process is like making sure you have the correct-sized puzzle pieces
+before putting the puzzle together. It's important because some
+clustering algorithms, like K-means, require such a parameter. In
+addition to that, it helps make the clustering more accurate and useful.
+If you know the right number beforehand, it saves time and helps make
+the whole process more efficient and the results more reliable.[8]
+
+**compute average silhouette for k clusters using silhouette() For k-mean**
+
+```{r}
+silhouette_score <- function(k) {
+  km <- kmeans(Hobby_Data2, centers = k, nstart = 25)
+  ss <- silhouette(km$cluster, dist(Hobby_Data2))
+  sil <- mean(ss[, 3])
+  return(sil)
+}
+
+# k cluster range from 2 to 10
+k <- 2:10
+
+# call function for each k value
+avg_sil <- sapply(k, silhouette_score)
+
+# plot the results
+plot(k, avg_sil, type = 'b', xlab = 'Number of clusters', ylab = 'Average Silhouette Scores', frame = FALSE)
+```
+
+The results indicate that the highest average silhouette scores indicate
+the quality of the clusters and suggest better-defined and more
+separated clusters, with each point having a high degree of similarity
+to its own cluster and a lower similarity to neighboring clusters. The
+highest average silhouette scores were observed for k values of 3, 2,
+and 4, so these are the optimal numbers. These values will be employed
+in subsequent k-means clustering analyses.
+
+**k-means cluster k=3**
+
+```{r}
+#set a seed for random number generation  to make the results reproducible
+set.seed(7)
+kmeans.result <- kmeans(Hobby_Data2, 3)
+
+# print the clusterng result
+kmeans.result
+
+#visualize clustering
+fviz_cluster(kmeans.result, data = Hobby_Data2)
+```
+
+**Average for each cluster**
+
+```{r}
+avg_sil <- silhouette(kmeans.result$cluster,dist(Hobby_Data2)) 
+fviz_silhouette(avg_sil)
+```
+
+the presence of negative silhouettes for some observations within each
+cluster indicates that these points might be more similar to points in
+other clusters, suggesting a potential overlap or ambiguity in their
+assignment. The fact that some observations have negative silhouettes
+highlights that the separation of data points is not entirely
+sufficient.
+
+So since 3, which was the optimal number of clusters with the highest
+silhouette score average, did not have good clustering results, that
+does support our research results that the k-means algorithm is not
+applicable to categoricaldata clustering because it relies on the
+Euclidean distance metric tomeasure the similarity between data points.
+However, even afterEncoding and its application to categorical data pose
+significant challenges. Categorical variables often lack a meaningful
+numericalrepresentation; for instance, taking the mean of categories
+like thefeature "favorite subject," aka Fav_sub" (even after encoding),
+might nothave any practical interpretation. And the distances calculated
+in thealgorithm may not reflect the true dissimilarities between
+categoricalvalues. The encoding process itself introduces artificial
+numericalrelationships that may mislead the algorithm. Moreover, k-means
+relieson the minimization of Euclidean distances, which might not
+accuratelycapture the dissimilarity structure in categorical data.
+Categoricalvariables inherently exhibit discrete and non-ordinal
+characteristicsthat are not well-suited for the continuous and linear
+assumptions ofk-means. Alternative clustering techniques, specifically
+designed forcategorical data, such as partitioning around medoids, are
+moreappropriate for capturing the intrinsic patterns and relationships
+incategorical datasets.[7]
+
+
+
+
+
+
+
+**k-mediods clustering with PAM**
+
+K-medoids clustering presents a robust alternative for analyzing
+categorical data by addressing the limitations posed by k-means
+clustering. Unlike k-means, k-medoids does not rely on the mean as a
+representative centroid but employs medoids, which are actual data
+points within the clusters, and the algorithm defines clusters based on
+partitioning around medoids. This feature makes k-medoids particularly
+suitable for categorical data, where meaningful centroids may not have a
+numerical interpretation. The algorithm defines clusters based on
+partitioning around medoids.
+
+**Validation:**
+
+First, we want to determine three different numbers of clusters by using
+a number of methods that will suggest the optimal number of clusters for
+k-mediods clustering with PAM.[8]
+
+**Silhouette coefficient**
+
+```{r}
+fviz_nbclust(Hobby_Data2, pam, method = "silhouette")+
+  labs(subtitle = "Silhouette method")
+```
+
+**Elbow method**   
+
+```{r}
+fviz_nbclust(Hobby_Data2, pam, method = "wss") +
+  geom_vline(xintercept= 3, linetype= 3)+
+  labs(subtitle = "Elbow method")
+```
+
+The silhouette coefficient, which measures the cohesion and separation
+of clusters, aligns with the Elbow method, which assesses the
+within-cluster sum of squares (wss) as a function of the number of
+clusters in the suggested optimal number of clusters. This alignment in
+results between two distinct evaluation methods strengthens confidence
+in the choice of three clusters, providing a stable foundation for
+further analysis and interpretation of the underlying patterns within
+the dataset. In addition to that, the ground truth (class labels) also
+contains three classes, and that indicates a reassuring alignment
+between the structure of the data and the clustering results.
+
+
+
+We need to determine two more suggested numbers of clusters by computing
+the average silhouette for k clusters using silhouette().
+```{r}
+silhouette_score <- function(k) {
+  km <- pam(Hobby_Data2, k, diss = TRUE)
+  ss <- silhouette(km$clustering, dist(Hobby_Data2))
+  sil <- mean(ss[, 3])
+  return(sil)
+}
+
+# k cluster range from 2 to 10
+k <- 2:10
+
+# Call function for each k value
+avg_sil <- sapply(k, silhouette_score)
+
+# Plot the results
+plot(k, avg_sil, type = 'b', xlab = 'Number of clusters', ylab = 'Average Silhouette Scores', frame = FALSE)
+```
+
+It is a common practice to choose the number of clusters corresponding
+to the peak in the silhouette score plot, and since we are looking for
+two more number of clusters other than three, it would be reasonable to
+consider two and four clusters for further analysis. Especially with the
+decreasing trend beyond three clusters, it indicates that adding more
+clusters does not significantly improve the separation and cohesion of
+the clusters.
+
+
+
+**group into k=3 clusters**
+
+The sub-sampling and clustering approach is a helpful method to evaluate
+the robustness of the clustering results under various subsets and to
+obtain insights into the structure of the data. Furthermore, we will
+take 100 samples from our data set to ensure that the clustering plot
+doesn't get too crowded.
+
+```{r}
+set.seed(7)
+
+# Specify the number of rows you want to sample
+num_rows <- 100
+
+# Use sample with the specified seed
+idx <- sample(1:dim(Hobby_Data2)[1], num_rows)
+
+Hobby_Data3 <- Hobby_Data2[idx, ]
+
+pam.result <- pam(Hobby_Data3,3)
+#Show the silhoutee plot of PAM AND clusters
+plot(pam.result)
+```
+
+The output of the code, displaying a silhouette plot of the PAM
+clusters, indicates that the clusters are relatively close to each
+other, with a slight overlap between two clusters. The silhouette plot
+visually represents how well-defined and separated the clusters are.
+While the slight overlap suggests that the natural grouping within the
+dataset may not be entirely distinct, it does not negatively affect the
+overall quality of the clusters. In fact, the observed overlap might
+indicate shared characteristics between adjacent clusters, effectively
+capturing meaningful patterns and groupings that reflect the intricacies
+of real-world phenomena not confined to strict boundaries.
+
+
+wws
+```{r}
+# Extract the clusinfo component
+clusinfo <- pam.result$clusinfo
+
+# Calculate the total within-cluster sum of squares
+tot_withinss <- sum(clusinfo[, "size"] * clusinfo[, "av_diss"]^2)
+
+# Print the result
+print(tot_withinss)
+```
+
+
+
+
+bCubed
+
+```{r}
+cluster_assignments <- c(pam.result$cluster)
+set.seed(7)
+
+# Specify the number of rows you want to sample
+num_rows <- 100
+
+# Use sample with the specified seed
+idx <- sample(1:dim(Hobby_proc)[1], num_rows)
+
+# Select the sampled rows from Hobby_proc
+Hobby_Data4 <- Hobby_proc[idx, ]
+ground_truth_labels <- c(Hobby_Data4)
+
+# Create a data frame with cluster assignments and ground truth labels
+dataset <- data.frame(cluster = cluster_assignments, label = ground_truth_labels)
+
+# Calculate BCubed precision and recall
+calculate_bcubed_metrics <- function(dataset) {
+  n <- nrow(dataset)
+  precision_sum <- 0 
+  recall_sum <- 0
+  
+   for (i in 1:n) {
+    cluster <- dataset$cluster[i] 
+    label <- dataset$label[i]
+    
+    # Count the number of items from the same category in its cluster
+    same_category <- sum(dataset$label[dataset$cluster == cluster] == label)   
+    
+    # Count the number of items in its cluster    
+    same_cluster <- sum(dataset$cluster == cluster)
+    
+    # Count the number of items in its category
+    total_same_category <- sum(dataset$label == label)   
+    
+    # Calculate precision and recall 
+    precision_sum <- precision_sum + same_category / same_cluster
+    recall_sum <- recall_sum + same_category / total_same_category 
+    }
+  # End loop 
+  
+  # Calculate average precision and recall  
+  precision <- precision_sum / n
+  recall <- recall_sum / n 
+  return(list(precision = precision, recall = recall))}
+
+  # Calculate BCubed precision and recall
+  metrics <- calculate_bcubed_metrics(dataset)
+  precision <- metrics$precision
+  recall <- metrics$recall
+
+# Print the results
+  cat("BCubed Precision= ", precision, "AND BCubed Recall= ", recall, "\n")
+```
+
+While precision highlights room for better accuracy in identifying
+similar items, the higher recall indicates the algorithm's capability to
+catch a good amount of actual similarities within clusters.
+
+
+
+
+**group into k=4 clusters**
+
+```{r}
+set.seed(7)
+
+# Specify the number of rows you want to sample
+num_rows <- 100
+
+# Use sample with the specified seed
+idx <- sample(1:dim(Hobby_Data2)[1], num_rows)
+
+Hobby_Data3 <- Hobby_Data2[idx, ]
+
+pam.result <- pam(Hobby_Data3,4)
+#Show the silhoutee plot of PAM AND clusters
+plot(pam.result)
+```
+
+wws
+```{r}
+# Extract the clusinfo component
+clusinfo <- pam.result$clusinfo
+
+# Calculate the total within-cluster sum of squares
+tot_withinss <- sum(clusinfo[, "size"] * clusinfo[, "av_diss"]^2)
+
+# Print the result
+print(tot_withinss)
+```
+
+The output suggests that the dataset may exhibit a degree of overlap or
+similarity among observations. The overlapping clusters may indicate
+challenges in achieving a clear separation among these groups. The
+placement of one cluster on top of two others implies that the medoid of
+this cluster might be near points belonging to those two neighboring
+clusters. This could be due to the nature of the data.
+ 
+
+BCubed
+```{r}
+cluster_assignments <- c(pam.result$cluster) 
+ 
+set.seed(7) 
+ 
+# Specify the number of rows you want to sample 
+num_rows <- 100 
+ 
+# Use sample with the specified seed 
+idx <- sample(1:dim(Hobby_proc)[1], num_rows) 
+ 
+# Select the sampled rows from Hobby_proc 
+Hobby_Data4 <- Hobby_proc[idx, ] 
+
+# Create a data frame with cluster assignments and ground truth labels
+dataset <- data.frame(cluster = cluster_assignments, label = ground_truth_labels)
+
+# Calculate BCubed precision and recall
+calculate_bcubed_metrics <- function(dataset) {
+  n <- nrow(dataset)
+  precision_sum <- 0
+  recall_sum <- 0
+ 
+  for (i in 1:n) {
+    cluster <- dataset$cluster[i]
+    label <- dataset$label[i]
+   
+    # Count the number of items from the same category in its cluster
+    same_category <- sum(dataset$label[dataset$cluster == cluster] == label)
+   
+    # Count the number of items in its cluster
+    same_cluster <- sum(dataset$cluster == cluster)
+   
+    # Count the number of items in its category
+    total_same_category <- sum(dataset$label == label)
+   
+    # Calculate precision and recall
+    precision_sum <- precision_sum + same_category / same_cluster
+    recall_sum <- recall_sum + same_category / total_same_category
+  }
+  # End loop
+ 
+  # Calculate average precision and recall
+  precision <- precision_sum / n
+  recall <- recall_sum / n
+ 
+  return(list(precision = precision, recall = recall))
+}
+
+# Calculate BCubed precision and recall
+metrics <- calculate_bcubed_metrics(dataset)
+precision <- metrics$precision
+recall <- metrics$recall
+
+# Print the results
+cat("BCubed Precision= ", precision, "AND BCubed Recall= ", recall, "\n")
+```
+
+The results indicate challenges in clustering performance. The low
+precision suggests a significant rate of misclassification, while the
+relatively low recall indicates that some instances within the same
+group are missed or incorrectly assigned to other clusters. These
+results highlight limitations in accurately capturing the data's
+underlying structure.
+
+
+
+**group into k=2 clusters**
+
+```{r}
+set.seed(7)
+
+# Specify the number of rows you want to sample
+num_rows <- 100
+
+# Use sample with the specified seed
+idx <- sample(1:dim(Hobby_Data2)[1], num_rows)
+
+Hobby_Data3 <- Hobby_Data2[idx, ]
+
+pam.result <- pam(Hobby_Data3,2)
+#Show the silhoutee plot of PAM AND clusters
+plot(pam.result)
+```
+
+wws
+```{r}
+# Extract the clusinfo component
+clusinfo <- pam.result$clusinfo
+
+# Calculate the total within-cluster sum of squares
+tot_withinss <- sum(clusinfo[, "size"] * clusinfo[, "av_diss"]^2)
+
+# Print the result
+print(tot_withinss)
+```
+An overlap between clusters implies that there is ambiguity in the
+assignment of data points to clusters, and the clusters may not be
+sufficiently distinct. In such cases, it might be needed to reconsider
+the number of clusters since the goal is to find a balance, but too few
+clusters result in oversimplification, as indicated by the observed
+overlap, and it is evident that forming only two clusters may not be
+sufficient to represent the inherent structure of the dataset.
+
+
+BCubed
+```{r}
+cluster_assignments <- c(pam.result$cluster) 
+ 
+set.seed(7) 
+ 
+# Specify the number of rows you want to sample 
+num_rows <- 100 
+ 
+# Use sample with the specified seed 
+idx <- sample(1:dim(Hobby_proc)[1], num_rows) 
+ 
+# Select the sampled rows from Hobby_proc 
+Hobby_Data4 <- Hobby_proc[idx, ] 
+
+# Create a data frame with cluster assignments and ground truth labels
+dataset <- data.frame(cluster = cluster_assignments, label = ground_truth_labels)
+
+# Calculate BCubed precision and recall
+calculate_bcubed_metrics <- function(dataset) {
+  n <- nrow(dataset)
+  precision_sum <- 0
+  recall_sum <- 0
+ 
+  for (i in 1:n) {
+    cluster <- dataset$cluster[i]
+    label <- dataset$label[i]
+   
+    # Count the number of items from the same category in its cluster
+    same_category <- sum(dataset$label[dataset$cluster == cluster] == label)
+   
+    # Count the number of items in its cluster
+    same_cluster <- sum(dataset$cluster == cluster)
+   
+    # Count the number of items in its category
+    total_same_category <- sum(dataset$label == label)
+   
+    # Calculate precision and recall
+    precision_sum <- precision_sum + same_category / same_cluster
+    recall_sum <- recall_sum + same_category / total_same_category
+  }
+  # End loop
+ 
+  # Calculate average precision and recall
+  precision <- precision_sum / n
+  recall <- recall_sum / n
+ 
+  return(list(precision = precision, recall = recall))
+}
+
+# Calculate BCubed precision and recall
+metrics <- calculate_bcubed_metrics(dataset)
+precision <- metrics$precision
+recall <- metrics$recall
+
+# Print the results
+cat("BCubed Precision= ", precision, "AND BCubed Recall= ", recall, "\n")
+```
+
+The relatively high recall could be influenced by the specific choice of
+two clusters since it is sensitive to the number of clusters. In the
+context of a two-cluster solution, the recall score reflects how well
+the algorithm groups data points from the same class into one of the two
+identified clusters. Recall suggests that a significant portion of data
+points from the same ground truth class are indeed grouped together in
+one of the two clusters. However, it's important to note that the low
+precision score (0.0432) indicates a lack of homogeneity within the
+identified clusters, implying that the clusters contain a mix of data
+points from different ground truth classes.
+
+
+
+**AS A Summary For clustring**
+Silhouette analysis measures how similar an object is to its own cluster
+(cohesion) compared to other clusters (separation). The silhouette width
+ranges from -1 to 1, where a high value indicates that the object is
+well matched to its own cluster and poorly matched to neighboring
+clusters. In our project we did clusters for k=3, k=4, and k=2 since its
+have higher average silhouette then other number.
+
+For k=3, the average silhouette width is 0.22. 
+For k=4, the average silhouette width is 0.19. 
+For k=2, the average silhouette width is 0.21.
+
+A higher average silhouette width generally indicates better-defined
+clusters. So, in this case, k=3 has the highest average silhouette
+width.
+
+BCubed is a clustering evaluation metric that considers both precision
+and recall. Precision measures the accuracy of the positive predictions,
+while recall measures the coverage of the actual positive instances.
+
+For k=3, BBCubed Precision = 0.0488 BCubed Recall = 0.4932.
+For k=4,BCubed Precision = 0.0505 BCubed Recall = 0.4101.
+For k=2, BCubedPrecision = 0.0432 BCubed Recall = 0.6252.
+
+These metrics measure how well the clustering aligns with the ground
+truth. Higher precision indicates fewer false positives, and higher
+recall indicates fewer false negatives. Here, k=2 has the highest recall
+(0.6252), but k=3 has a reasonable balance between precision and recall.
+
+In conclusion, k=3 seems to be a reasonable choice. It has a good
+silhouette width, and its BCubed Precision and Recall values strike a
+balance.
+
+
+
+
+**\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\--**
+
+
+
+
+
+**6.Evaluation and Comparison**
+
+**#1#Classification with comparison criteria**
+
+|                | 90%/10% | 90%/10%  |  90%/10%   | 80%/20% | 80%/20%  |  80%/20%   | 70%/30% | 70%/30%  |  70%/30%   |
+|:--------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|:------:|
+|                |   IG    | IG ratio | Gini Index |   IG    | IG ratio | Gini Index |   IG    | IG ratio | Gini Index |
+|  **Accuracy**  |  0.872  |  0.8944  |  0.91875   |  0.905  |  0.888   |   0.906    |  0.893  |  0.8939  |   0.911    |
+| **precision**  |  0.856  |  0.892   |  0.91850   |  0.898  |  0.881   |   0.905    |  0.887  |  0.890   |   0.909    |
+| **sensitiviy** |  0.856  |  0.891   |  0.91927   |  0.898  |  0.890   |   0.909    |  0.887  |  0.902   |   0.912    |
+| **specificiy** |  0.919  |  0.945   |   0.9578   |  0.937  |  0.943   |   0.952    |  0.929  |  0.947   |   0.954    |
+
+
+
+
+
+**#1#Clustering with comparison criteria**
+
+|                                        | k = 2  | k = 3(BEST) | k = 4    |
+|----------------------------------------|--------|-------------|----------|
+| **Average Silhouette width**           | 0.21   | 0.22        | 0.19     |
+| **total within-cluster sum of square** | 1059.6 | 833.5585    | 762.8895 |
+| **BCubed precision**                   | 0.0432 | 0.0488      | 0.0505   |
+| **BCubed recall**                      | 0.6252 | 0.4932      | 0.4101   |
+| **Visualization**                      | -      |     -       |     -    |
+
+**-note the Visualization In the implementaion of clustering above.-**
+
+
+**Comparison of Classification and Clustering**
+
+Classification is better than clustering for our data set because our problem involves predicting kids' hobbies based on specific attributes, and classification models are designed for precisely this kind of task. In contrast, clustering is useful for discovering natural groupings but doesn't necessarily assign them to predefined categories. Additionally, clustering might create groups that don't directly correspond to the desired hobby categories, making interpretation and application more challenging in this context. Hence, the structured nature of classification, where the model is trained on labeled data to predict specific outcomes, makes it more appropriate for our task.
+
+The nature of the data types, which include a majority of Boolean and ordinal variables in our dataset influenced the preference for classification over clustering, since classification models, particularly decision trees, are adept at handling these data types. On the other hand, cluster\'s application might be less straightforward when dealing with categorical and ordinal variables, especially if the goal is to predict predefined categories. making classification more appropriate for our dataset compared to clustering, ‎which may not align with the structured prediction task in our case.
+
+The observation of clusters being close to each other when plotted using PAM (Partitioning Around Medoids) while achieving high accuracy in the classification model does influence the preference for classification over clustering. The close proximity and overlap in clusters suggest that the clustering algorithm may not effectively separate the data points based on the given attributes. On the other hand, the high accuracy of the classification model indicates that the chosen classification approach, particularly decision tree models, is successful in accurately predicting the hobby for each data point. This performance difference reinforces the suitability of classification for our dataset, where the goal is to precisely assign specific labels to each observation based on its attributes, and clustering may not provide the necessary separation for effective prediction.
+
+
+
+
+
+**\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\--**
+
+
+
+
+
+
+
+**7.Findings**
+
+**7.1: Classification Comparision:**
+
+In the classification task, the evaluation of 36 metrics revealed distinctive performance patterns across various criteria:
+
+
+1.  Accuracy:
+
+Gini 90-10 had the highest accuracy at 91.88%, closely followed by Gini 70-30 at 91.06%.
+
+Information Gain 80-20 also displayed strong accuracy at 90.57%, and Gini 80-20 had an accuracy of 90.62%.
+
+Ratio models had slightly lower accuracies ranging from 89.44% (Ratio 90-10) to 88.79% (Ratio 80-20 and 70-30).
+
+Information Gain 70-30 and Gini 80-20 closely followed with accuracies around 89.32% and 90.62% respectively.
+
+Information Gain 90-10 displayed a lower accuracy at 87.21%.
+
+
+2.  Sensitivity:
+
+Gini models consistently showed high sensitivity ranging from 91.19% (Gini 70-30) to 91.93% (Gini 90-10).
+
+Ratio models followed with sensitivity levels around 89.15% to 90.25%.
+
+Information Gain models demonstrated slightly lower sensitivity, ranging from 85.66% (Information Gain 90-10) to 89.83% (Information Gain 80-20).
+
+
+3.  Specificity:
+
+Gini models showcased strong specificity, reaching from 95.15% (Gini 80-20) to 95.79% (Gini 90-10).
+
+Ratio models exhibited specificity between 94.26% (Ratio 80-20) and 94.66% (Ratio 70-30).
+
+Information Gain models displayed specificity levels around 91.91% (Information Gain 90-10) to 93.78% (Information Gain 80-20).
+
+
+4.  Precision:
+
+Gini models maintained high precision, ranging from 90.46% (Gini 80-20) to 91.85% (Gini 90-10).
+
+Ratio models demonstrated precision between 88.11% (Ratio 80-20) and 89.19% (Ratio 90-10).
+
+Information Gain models exhibited precision around 85.66% (Information Gain 90-10) to 89.83% (Information Gain 80-20).
+
+Overall, Gini models consistently showcased strong performance across most metrics, especially in sensitivity and specificity, followed closely by Ratio models. Information Gain models, while competitive in accuracy, displayed slightly lower sensitivity and specificity compared to Gini and Ratio models.
+
+**Analyzing and Selecting the Best Trees from Each Method**
+
+
+1.  Gini Index:
+
+Best Tree: Gini 90-10
+
+-   Accuracy: 91.88%
+
+-   Sensitivity: 91.93%
+
+-   Specificity: 95.79%
+
+-   Precision: 91.85%
+
+
+Explanation:
+
+The Gini 90-10 tree outperforms others, providing the highest accuracy and well-balanced sensitivity and specificity. This tree exhibits superior predictive power, making it an optimal choice for accurately categorizing children's hobbies.
+
+The most influential attributes in predicting hobbies within the Gini Index Decision Tree (90/10) are engagement in sports activities ('Career_sprt'), involvement in arts hobbies ('Fant_arts'), and the level of arts activity ('Time_art').
+
+
+Confusion Matrix for Gini 90-10:
+
+                      Predicted Positive    Predicted Negative
+
+Actual Positive            True Positive (91.93%)         False Negative (8.07%)
+
+Actual Negative            False Positive (4.21%)         True Negative (95.79%)
+
+
+2.  Ratio:
+
+Best Tree: Ratio 90-10
+
+-   Overall Accuracy: 89.44%
+
+-   Average Sensitivity: 89.15%
+
+-   Average Specificity: 94.66%
+
+-   Average Precision: 89.19%
+
+
+Explanation:
+Among Ratio trees, the Ratio 90-10 tree stands out with competitive accuracy, sensitivity, and specificity. It strikes a balance between identifying positive cases and correctly predicting negative cases, making it a reliable choice for predicting children's hobbies.
+
+The primary attributes influencing hobby predictions in the Gain Ratio Decision Tree (90%/10%) are 'Career_sprt,' 'Fant_arts,' 'Won_arts,' 'Olympiad_Participation,' 'Grasp_pow,' 'Time_art,' and 'Act_sprt.'
+
+
+Confusion Matrix for Ratio 90-10:
+
+                      Predicted Positive    Predicted Negative
+
+Actual Positive            True Positive (89.15%)         False Negative (10.85%)
+
+Actual Negative            False Positive (5.34%)         True Negative (94.66%)
+
+
+3.  Information Gain:
+
+Best Tree: Information Gain 80-20
+
+-   Accuracy: 90.57%
+
+-   Sensitivity: 89.83%
+
+-   Specificity: 93.78%
+
+-   Precision: 89.83%
+
+
+Explanation:
+
+The Information Gain 80-20 tree exhibits strong accuracy and well-balanced sensitivity and specificity. It effectively utilizes information gain to predict children's hobbies, making it a favorable choice within the Information Gain method.
+
+The most influential attributes in predicting hobbies within the Information Gain Decision Tree (80/20) include engagement in sports activities ('Career_sprt'), involvement in arts hobbies ('Fant_arts'), and the level of arts activity ('Time_art').
+
+Confusion Matrix for Information Gain 80-20:
+
+                      Predicted Positive    Predicted Negative
+
+Actual Positive            True Positive (89.83%)          False Negative (10.17%)
+
+Actual Negative            False Positive (6.22%)          True Negative (93.78%)
+
+
+
+**Overall Analysis:**
+
+\- The Gini 90-10 tree excels in accuracy, sensitivity, and specificity within the Gini Index method.
+
+\- The Ratio 90-10 tree demonstrates competitive performance, particularly in accuracy and specificity within the Ratio method.
+
+\- The Information Gain 80-20 tree showcases strong accuracy and balanced sensitivity and specificity within the Information Gain method.
+
+The selection of the best tree depends on specific priorities. If a well-balanced model is crucial, Gini 90-10 stands out. For a balanced Ratio model, Ratio 90-10 is favorable. Information Gain 80-20 offers strong accuracy and balance within the Information Gain method.
+
+Best Tree Across All Methods:
+
+Best Tree: Gini 90-10
+
+Accuracy: 91.88%
+
+Sensitivity: 91.93%
+
+Specificity: 95.79%
+
+Precision: 91.85%
+
+The Gini 90-10 tree stands out as the best-performing tree across all methods, displaying superior accuracy, sensitivity, specificity, and precision. It excels in accurately predicting children's hobbies, making it the optimal choice among the evaluated trees.
+
+The Gini index with a 90-10 attribute selection measure has emerged as the most effective solution in our classification model for predicting children's hobbies. This particular attribute selection method prioritizes the most relevant features, ensuring that the decision tree focuses on the attributes that contribute significantly to the classification accuracy. The practical implications of this solution are substantial, as it prioritizes certain attributes, such as Olympiad participation, scholarship status, and favorite subject. The model offers valuable insights for parents and educators in guiding children toward activities aligned with their interests and strengths. Compared to other attribute selection measures, it leads to more accurate predictions and, consequently, more tailored recommendations for children's hobbies. This refined approach enhances the model's practical utility, making it a valuable tool for assisting parents in fostering an environment where children can explore and excel in activities that truly resonate with their individual preferences.
+
+**7.2: the best partitioning method for clustering:**
+
+According to our research and attempt to cluster using k-means algorithm we figured that it is not applicable to our data because it relies on the Euclidean distance metric to measure the similarity between data points. However, even after Encoding and its application to categorical data pose significant challenges. Categorical variables often lack a meaningful numerical representation; for instance, taking the mean of categories like the feature \"favorite subject,\" aka \"Fav_sub\" (even after encoding), might not have any practical interpretation. And the distances calculated in the algorithm may not reflect the true dissimilarities between categorical values. The encoding process itself introduces artificial numerical relation that may mislead the algorithm. Moreover, k-means relies on the minimization of Euclidean distances, which might not accurately capture the dissimilarity structure in categorical data. Categorical variables inherently exhibit discrete and non-ordinal characteristics that are not well-suited for the continuous and linear assumptions of k-means. Alternative clustering techniques, specifically designed for categorical data, such as partitioning around medoids, are more appropriate for capturing the intrinsic patterns and relationships in categorical data sets.\ [7]
+
+**7.3: Clustering Comparison:**
+
+In assessing and comparing the performance of 12 metrics in the clustering task, we observe notable variations in their effectiveness across different values of K. For K=2, the Average Silhouette Width of 0.21 indicates a moderate level of separation between clusters, while the BCubed precision and recall highlight challenges in precisely classifying data points. Moving to K=3, the Average Silhouette Width slightly improves to 0.22, suggesting enhanced cluster distinctiveness. The BCubed metrics, precision, and recall, also exhibit improvements, indicating a more balanced and accurate clustering. However, K=4 witnesses a decline in the Average Silhouette Width to 0.19, reflecting a potential decrease in separation between clusters. Despite this, the BCubed metrics continue to demonstrate reasonable precision and recall values, emphasizing the resilience of the clustering patterns. Overall, these metrics collectively offer insights into the trade-offs between cluster compactness and separation at different K values, guiding the selection of K=3 as the optimal choice for capturing meaningful clustering patterns within the data set. The fact that the actual class labels in our data set consist of three distinct classes aligns with the findings from the clustering analysis, particularly at K=3. This convergence strengthens the interpretation of the results, as it indicates that the clustering algorithm successfully identified and differentiated the inherent structure of the data. The agreement between the actual class labels and the clusters formed by the algorithm at K=3 suggests that the clustering patterns are meaningful and aligned with the underlying characteristics of the data set. It reinforces the relevance of using K=3 as the optimal choice, as it aligns with the inherent class structure in the data set, providing a more accurate representation of the underlying patterns in the children's hobbies.
+
+The chosen K holds significant implications for addressing the problem. In the context of guiding children towards suitable hobbies, it plays a pivotal role in optimizing the effectiveness of our model for parents in making informed choices. If K were set higher than 3, the categorization would lack the depth needed for insightful distinctions among preferences. On the other hand, if K were lower than 3, the model's accuracy could be compromised, as one or more class labels may not be adequately defined within the clusters. This deficiency would adversely impact the precision of predictions, hindering the model's ability to offer precise guidance to parents. By settling on K=3, we strike a balance that ensures meaningful and well-defined clusters, providing parents with a reliable tool to navigate and understand their child's inclinations effectively, offering a comprehensive categorization that aligns with the inherent structure of the dataset.
+
+**7.4: Clustering Interpretation:**
+
+```{r}
+# Create a temporary data frame for clustering results
+clustered_data <- data.frame(Hobby_Data3, cluster = pam.result$clustering)
+
+# Show all data points in each cluster
+for (i in unique(pam.result$clustering)) {
+  cat("Cluster", i, ":\n")
+  print(clustered_data[clustered_data$cluster == i, -ncol(clustered_data)])
+  cat("\n")
+}
+```
+
+**Cluster 1:**
+
+Based on the data points, the students in cluster 1 are primarily interested in academics. They are more likely to have participated in Olympiads, have received scholarships, and they favor challenging courses, since there are 98 out of 150 of them chose science as their favorite subject. They also tend to spend more time on academics than on sports or arts.
+
+The predicted hobby for students in cluster 1 is **academics**. This is supported by the fact that they have the following characteristics:
+
+-   **High academic achievement:** They have participated in Olympiads, received scholarships, and favor challenging courses.
+
+-   **Strong focus on academics:** They spend more time on academics than on sports or arts.
+
+-   Within this cluster, there is a lower interest or participation in sports activities (Career_sprt), but there may be a significant focus on winning art competitions (Won_arts) and enjoying fantasy arts (Fant_arts).
+
+**Cluster 2:**
+
+Based on the data points, the students in cluster 2 are primarily interested in sports. They are more likely to have played sports in school and to be involved in sports activities in general. They also tend to spend more time on sports than on academics or arts.
+
+The predicted hobby for students in cluster 2 is **sports**. This is supported by the fact that they have the following characteristics:
+
+-   **High involvement in sports:** They played sports in school and are involved in sports activities now. This implies a strong interest and participation in sports activities (Olympiad_Participation, Act_sprt).
+
+-   **Strong focus on sports:** They spend more time on sports than on academics or arts (Time_sprt).
+
+-   There may be lower interest in fantasy arts (Fant_arts) within this cluster.
+
+**Cluster 3:**
+
+Based on the data points, the students in cluster 3 are primarily interested in arts. They tend to spend more time on arts than on academics or sports.
+
+The predicted hobby for students in cluster 3 is **arts**. This is supported by the fact that they have the following characteristics:
+
+-   **Strong focus on arts:** They tend to have a strong interest in creating fantasy paintings (Fant_arts), potentially winning art competitions (Won_arts), and dedicating time to artistic pursuits (Time_art).
+
+-   There may be lower interest or participation in sports activities (Career_sprt, Olympiad_Participation, Act_sprt) within this cluster.
+
+In conclusion, this analysis involved examination of clusters within our dataset, with a focus on understanding the shared characteristics of each cluster by considering variable importance ranks.This clustering approach and subsequent interpretation offer valuable insights into the diverse preferences and tendencies within our data set, understanding these clusters can be benificail in personalizing educational or recreational experiences based on individual interests and inclinations.
+
+**7.5: Comparison of Classification and Clustering:**
+Classification is better than clustering for our data set because our problem involves predicting kids' hobbies based on specific attributes, and classification models are designed for precisely this kind of task. In contrast, clustering is useful for discovering natural groupings but doesn't necessarily assign them to predefined categories. Additionally, clustering might create groups that don't directly correspond to the desired hobby categories, making interpretation and application more challenging in this context. Hence, the structured nature of classification, where the model is trained on labeled data to predict specific outcomes, makes it more appropriate for our task.
+
+The nature of the data types, which include a majority of Boolean and ordinal variables in our dataset influenced the preference for classification over clustering, since classification models, particularly decision trees, are adept at handling these data types. On the other hand, cluster\'s application might be less straightforward when dealing with categorical and ordinal variables, especially if the goal is to predict predefined categories. making classification more appropriate for our dataset compared to clustering, ‎which may not align with the structured prediction task in our case.
+
+The observation of clusters being close to each other when plotted using PAM (Partitioning Around Medoids) while achieving high accuracy in the classification model does influence the preference for classification over clustering. The close proximity and overlap in clusters suggest that the clustering algorithm may not effectively separate the data points based on the given attributes. On the other hand, the high accuracy of the classification model indicates that the chosen classification approach, particularly decision tree models, is successful in accurately predicting the hobby for each data point. This performance difference reinforces the suitability of classification for our dataset, where the goal is to precisely assign specific labels to each observation based on its attributes, and clustering may not provide the necessary separation for effective prediction.
+
+
+
+
+
+**\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\--**
+
+
+
+
+
+
+
+**8.References(Using IEEE format)**
+
+[1]SagarDhandare, “What Is Encoding? And Its Importance in Data Science!,” Medium, Mar. 28, 2022. https://medium.datadriveninvestor.com/what-is-encoding-and-its-importance-in-data-science-6a2b0cce8e8e
+
+[2]“6.3. Preprocessing data — scikit-learn 0.23.1 documentation,” scikit-learn.org. https://scikit-learn.org/stable/modules/preprocessing.html#normalization
+
+[3]https://www.facebook.com/jason.brownlee.39, “Feature Selection with the Caret R Package,” Machine Learning Mastery, Aug. 22, 2019. https://machinelearningmastery.com/feature-selection-with-the-caret-r-package/
+
+[4]“RPubs - Decision Tree Using (Information Gain),” rpubs.com. https://rpubs.com/SameerMathur/DT_InformationGain_CCDefault (accessed Nov. 30, 2023).
+
+[5]“RPubs - Decision Tree (Gini),” rpubs.com. 
+https://rpubs.com/SameerMathur/DT_Gini_CCDefault (accessed Dec. 01, 2023).
+
+[6]“RPubs - Data Mining: Classification with Decision Trees,” rpubs.com. https://rpubs.com/kjmazidi/195428 (accessed Nov. 30, 2023).
+
+[7]“Clustering binary data with K-Means (should be avoided),” www.ibm.com, Apr. 16, 2020. https://www.ibm.com/support/pages/clustering-binary-data-k-means-should-be-avoided
+
+[8]A. Kassambara, “Determining The Optimal Number Of Clusters: 3 Must Know Methods - Datanovia,” Datanovia, 2018. https://www.datanovia.com/en/lessons/determining-the-optimal-number-of-clusters-3-must-know-methods/
+
+
+`
+
+
